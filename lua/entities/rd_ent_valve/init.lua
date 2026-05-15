@@ -9,10 +9,10 @@ function ENT:Initialize()
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
-	self:SetNetworkedInt( "overlaymode", 1 )
-	self:SetNetworkedInt( "OOO", 0 )
+	self:SetNWInt( "overlaymode", 1 )
+	self:SetNWInt( "OOO", 0 )
 	self.range = 512
-	self:SetNetworkedInt( "range", 512 )
+	self:SetNWInt( "range", 512 )
 	self.Active = 0
 	self.connected = {}
 	self.connected.ent = nil
@@ -32,9 +32,9 @@ function ENT:SetRDEntity(ent)
 	end
 	self.connected.ent = ent
 	if ent then
-		self:SetNetworkedInt("entid", ent:EntIndex( ))
+		self:SetNWInt("entid", ent:EntIndex( ))
 	else
-		self:SetNetworkedInt("entid", 0)
+		self:SetNWInt("entid", 0)
 	end
 end
 
@@ -52,9 +52,9 @@ function ENT:SetNode(node)
 		self:TurnOff()
 	end
 	if node then
-		self:SetNetworkedInt("netid", node.netid)
+		self:SetNWInt("netid", node.netid)
 	else
-		self:SetNetworkedInt("netid", 0)
+		self:SetNWInt("netid", 0)
 	end
 end
 
@@ -105,7 +105,7 @@ function ENT:SetActive( value, caller )
 end
 
 function ENT:SetOOO(value)
-	self:SetNetworkedInt( "OOO", value )
+	self:SetNWInt( "OOO", value )
 end
 
 function ENT:Repair()
@@ -133,26 +133,26 @@ function ENT:Think()
 	-- Check if all ents are still valid!
 	if self.connected.ent and not IsValid(self.connected.ent) then 
 		self.connected.ent = nil 
-		self:SetNetworkedInt("entid", 0)
+		self:SetNWInt("entid", 0)
 	end
 	if self.connected.node and not IsValid(self.connected.node) then 
 		self:TurnOff()
 		self.connected.node = nil 
-		self:SetNetworkedInt("netid", 0)
+		self:SetNWInt("netid", 0)
 	end
 	-- Check if they are still in range!
 	if self.connected.ent then
 		if self.connected.ent:GetPos():Distance(self:GetPos()) > self.range then
 			self:TurnOff()
 			self.connected.ent = nil
-			self:SetNetworkedInt("entid", 0)
+			self:SetNWInt("entid", 0)
 		end
 	end
 	if self.connected.node then
 		if self:GetPos():Distance(self.connected.node:GetPos()) > self.connected.node.range then
 			self:TurnOff()
 			self.connected.node = nil 
-			self:SetNetworkedInt("netid", 0)
+			self:SetNWInt("netid", 0)
 		end
 	end
 	self:NextThink( CurTime() + 1 )

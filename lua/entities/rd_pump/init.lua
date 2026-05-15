@@ -5,6 +5,9 @@ util.PrecacheSound( "RD/pump/beep-4.wav" )
 util.PrecacheSound( "RD/pump/beep-3.wav" )
 util.PrecacheSound( "RD/pump/beep-5.wav" )
 
+util.AddNetworkString("RD_Add_ResourceRate_to_Pump")
+util.AddNetworkString("RD_Open_Pump_Menu")
+
 include('shared.lua')
 local pumps = {}
 
@@ -46,11 +49,11 @@ local function SetResourceAmount(ply, com, args)
 			amount = 0
 		end
 		ent.ResourcesToSend[args[2]] = amount
-		umsg.Start("RD_Add_ResourceRate_to_Pump")
-			umsg.Entity(ent)
-			umsg.String(args[2])
-			umsg.Short(amount)
-		umsg.End()
+		net.Start("RD_Add_ResourceRate_to_Pump")
+			net.WriteEntity(ent)
+			net.WriteString(args[2])
+			net.WriteInt(amount, 16)
+		net.Broadcast()
 	end
 end
 concommand.Add( "SetResourceAmount", SetResourceAmount )
@@ -110,11 +113,11 @@ local function UserConnect(ply)
 			if IsValid(v) then
 				if next(v.ResourcesToSend) ~= nil then
 					for l, w in pairs(v.ResourcesToSend) do
-						umsg.Start("RD_Add_ResourceRate_to_Pump", ply)
-							umsg.Entity(v)
-							umsg.String(l)
-							umsg.Short(w)
-						umsg.End()
+						net.Start("RD_Add_ResourceRate_to_Pump")
+							net.WriteEntity(v)
+							net.WriteString(l)
+							net.WriteInt(w, 16)
+						net.Send(ply)
 					end
 				end
 			end
@@ -128,12 +131,12 @@ function ENT:Initialize()
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
-	self:SetNetworkedInt( "overlaymode", 1 )
-	self:SetNetworkedInt( "OOO", 0 )
+	self:SetNWInt( "overlaymode", 1 )
+	self:SetNWInt( "OOO", 0 )
 	self.Active = 0
 	self.ResourcesToSend = {}
 	self.netid = 0
-	self:SetNetworkedInt( "netid", self.netid )
+	self:SetNWInt( "netid", self.netid )
 	self.otherpump = nil
 	self.WireConnectPump = -1
 	table.insert(pumps, self)
@@ -146,22 +149,22 @@ function ENT:Initialize()
 	else
 		self.Inputs = {{Name="On"},{Name="Disconnect"},{Name="ConnectID"},{Name="Connect"}}
 	end
-	self:SetNetworkedString("name", "test");
+	self:SetNWString("name", "test");
 	self:SetPumpName("Pump_"..tostring(self:EntIndex()));
 end
 
 function ENT:GetPumpName()
-	return self:GetNetworkedString("name");
+	return self:GetNWString("name");
 end
 
 function ENT:SetPumpName(name)
-	self:SetNetworkedString("name", name);
+	self:SetNWString("name", name);
 end
 
 function ENT:SetNetwork(netid)
 	if not netid then return end
 	self.netid = netid
-	self:SetNetworkedInt( "netid", self.netid )
+	self:SetNWInt( "netid", self.netid )
 end
 
 function ENT:TurnOn()
@@ -220,9 +223,9 @@ end
 --override to do overdrive
 --AcceptInput (use action) calls this function with value = nil
 function ENT:SetActive( value, caller )
-	umsg.Start("RD_Open_Pump_Menu", caller)
-		umsg.Entity(self)
-	umsg.End()
+	net.Start("RD_Open_Pump_Menu")
+		net.WriteEntity(self)
+	net.Send(caller)
 end
 
 function ENT:SetResourceNode(node)
@@ -231,7 +234,7 @@ function ENT:SetResourceNode(node)
 end
 
 function ENT:SetOOO(value)
-	self:SetNetworkedInt( "OOO", value )
+	self:SetNWInt( "OOO", value )
 end
 
 AccessorFunc( ENT, "LSMULTIPLIER", "Multiplier", FORCE_NUMBER )
@@ -312,9 +315,9 @@ end
 
 function ENT:Connect(ent)
 	if ent and ent.IsPump then
-		self:SetNetworkedInt("connectedpump", ent:EntIndex())
+		self:SetNWInt("connectedpump", ent:EntIndex())
 		self.otherpump = ent
-		ent:SetNetworkedInt("connectedpump", self:EntIndex())
+		ent:SetNWInt("connectedpump", self:EntIndex())
 		ent.otherpump = self
 		Wire_TriggerOutput(self, "ConnectedPumpID", ent:EntIndex())
 		Wire_TriggerOutput(ent, "ConnectedPumpID", self:EntIndex())
@@ -327,11 +330,11 @@ function ENT:Disconnect()
 	if self.otherpump then
 		self:EmitSound("RD/pump/beep-4.wav", 256) 
 		self.otherpump:EmitSound("RD/pump/beep-4.wav", 256)
-		self.otherpump:SetNetworkedInt("connectedpump", 0)
+		self.otherpump:SetNWInt("connectedpump", 0)
 		self.otherpump.otherpump = nil
 		Wire_TriggerOutput(self, "ConnectedPumpID", -1)
 		Wire_TriggerOutput(self.otherpump, "ConnectedPumpID", -1)
-		self:SetNetworkedInt("connectedpump", 0)
+		self:SetNWInt("connectedpump", 0)
 		self.otherpump = nil
 	end
 end

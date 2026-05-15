@@ -427,13 +427,12 @@ end
 hook.Add( "PlayerInitialSpawn", "CAF_In_Spawn", CAF2.PlayerSpawn )
 
 
-local oldcreate = ents.Create
-
-ents.Create = function(class)
-	local ent = oldcreate(class)
-	timer.Simple( 0.1, function() OnEntitySpawn( ent, "SENT" ) end)
-	return ent;
-end
+hook.Add("OnEntityCreated", "CAF_OnEntityCreated", function(ent)
+	if not IsValid(ent) then return end
+	timer.Simple(0, function()
+		if IsValid(ent) then OnEntitySpawn(ent, "SENT") end
+	end)
+end)
 
 --msg, location, color, displaytime
 function CAF2.POPUP(ply, msg, location, color, displaytime)
@@ -576,3 +575,16 @@ for k, File in ipairs(Files) do
 		Msg("Sent: Successfully\n")
 	end
 end
+
+hook.Add("EntityRemoved", "CAF_RD_EntityRemoved", function(ent)
+	local RD = CAF.GetAddon("Resource Distribution")
+	if RD and RD.GetStatus() then
+		RD.Unlink(ent)
+		RD.RemoveRDEntity(ent)
+	end
+	local LS = CAF.GetAddon("Life Support")
+	if LS and LS.GetStatus() then
+		LS.RemoveAirRegulator(ent)
+		LS.RemoveTemperatureRegulator(ent)
+	end
+end)

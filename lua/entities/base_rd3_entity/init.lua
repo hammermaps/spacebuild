@@ -1,6 +1,8 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 
+util.AddNetworkString("RD_AddInputToMenu")
+
 include('shared.lua')
 
 function ENT:Initialize()
@@ -8,8 +10,8 @@ function ENT:Initialize()
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)
-    self:SetNetworkedInt("overlaymode", 1)
-    self:SetNetworkedInt("OOO", 0)
+    self:SetNWInt("overlaymode", 1)
+    self:SetNWInt("OOO", 0)
     self.Active = 0
     self.caf = self.caf or {}
     self.caf.custom = self.caf.custom or {}
@@ -29,7 +31,7 @@ function ENT:SetActive(value, caller)
 end
 
 function ENT:SetOOO(value)
-    self:SetNetworkedInt("OOO", value)
+    self:SetNWInt("OOO", value)
 end
 
 AccessorFunc(ENT, "LSMULTIPLIER", "Multiplier", FORCE_NUMBER)
@@ -49,11 +51,11 @@ function ENT:AcceptInput(name, activator, caller)
             local num = 1
             for k, v in pairs(self.Inputs) do
                 if num >= maxz then last = true end
-                umsg.Start("RD_AddInputToMenu", caller)
-                umsg.Bool(last)
-                umsg.String(v.Name)
-                umsg.Short(self:EntIndex())
-                umsg.End()
+                net.Start("RD_AddInputToMenu")
+                    net.WriteBit(last and 1 or 0)
+                    net.WriteString(v.Name)
+                    net.WriteInt(self:EntIndex(), 16)
+                net.Send(caller)
                 num = num + 1
             end
         else

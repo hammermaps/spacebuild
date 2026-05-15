@@ -347,19 +347,19 @@ local function lifesupport_HUDPaint()
 	end
 end 
 
-local function LS_umsg_hook1( um )
-	ls_environment.o2 = um:ReadFloat()
-	ls_suit.o2 = um:ReadShort()
-	ls_environment.temperature = um:ReadShort()
-	ls_suit.coolant = um:ReadShort()
-	ls_suit.energy = um:ReadShort()
+local function LS_umsg_hook1( len, client )
+	ls_environment.o2 = net.ReadFloat()
+	ls_suit.o2 = net.ReadInt(16)
+	ls_environment.temperature = net.ReadInt(16)
+	ls_suit.coolant = net.ReadInt(16)
+	ls_suit.energy = net.ReadInt(16)
 end
-usermessage.Hook("LS_umsg1", LS_umsg_hook1) 
+net.Receive("LS_umsg1", LS_umsg_hook1)
 
-local function LS_umsg_hook2( um )
-	ls_suit.o2 = um:ReadShort()
+local function LS_umsg_hook2( len, client )
+	ls_suit.o2 = net.ReadInt(16)
 end
-usermessage.Hook("LS_umsg2", LS_umsg_hook2) 
+net.Receive("LS_umsg2", LS_umsg_hook2)
 
 --The Class
 --[[

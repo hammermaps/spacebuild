@@ -185,51 +185,51 @@ function ENT:Think()
 end
 
 local function SendBloom(ent)
-    for k, ply in pairs(player.GetAll()) do
-        umsg.Start("AddPlanet", ply)
-        umsg.Entity(ent) --planet.num
-        umsg.Float(ent.sbenvironment.size)
-        umsg.Bool(false)
-        if (ent.sbenvironment.bloom ~= nil) then
-            umsg.Bool(true)
-            umsg.Short(ent.sbenvironment.bloom.Col_r)
-            umsg.Short(ent.sbenvironment.bloom.Col_g)
-            umsg.Short(ent.sbenvironment.bloom.Col_b)
-            umsg.Float(ent.sbenvironment.bloom.SizeX)
-            umsg.Float(ent.sbenvironment.bloom.SizeY)
-            umsg.Float(ent.sbenvironment.bloom.Passes)
-            umsg.Float(ent.sbenvironment.bloom.Darken)
-            umsg.Float(ent.sbenvironment.bloom.Multiply)
-            umsg.Float(ent.sbenvironment.bloom.Color)
+    net.Start("AddPlanet")
+        net.WriteInt(ent:EntIndex(), 16)
+        net.WriteString(ent:GetEnvironmentName())
+        net.WriteVector(ent:GetPos())
+        net.WriteFloat(ent.sbenvironment.size)
+        net.WriteBit(0)
+        if ent.sbenvironment.bloom ~= nil then
+            net.WriteBit(1)
+            net.WriteInt(ent.sbenvironment.bloom.Col_r, 16)
+            net.WriteInt(ent.sbenvironment.bloom.Col_g, 16)
+            net.WriteInt(ent.sbenvironment.bloom.Col_b, 16)
+            net.WriteFloat(ent.sbenvironment.bloom.SizeX)
+            net.WriteFloat(ent.sbenvironment.bloom.SizeY)
+            net.WriteFloat(ent.sbenvironment.bloom.Passes)
+            net.WriteFloat(ent.sbenvironment.bloom.Darken)
+            net.WriteFloat(ent.sbenvironment.bloom.Multiply)
+            net.WriteFloat(ent.sbenvironment.bloom.Color)
         else
-            umsg.Bool(false)
+            net.WriteBit(0)
         end
-        umsg.End()
-    end
+    net.Broadcast()
 end
 
 local function SendColor(ent)
-    for k, ply in pairs(player.GetAll()) do
-        umsg.Start("AddPlanet", ply)
-        umsg.Entity(ent) --planet.num
-        umsg.Float(ent.sbenvironment.size)
+    net.Start("AddPlanet")
+        net.WriteInt(ent:EntIndex(), 16)
+        net.WriteString(ent:GetEnvironmentName())
+        net.WriteVector(ent:GetPos())
+        net.WriteFloat(ent.sbenvironment.size)
         if ent.sbenvironment.color ~= nil then
-            umsg.Bool(true)
-            umsg.Short(ent.sbenvironment.color.AddColor_r)
-            umsg.Short(ent.sbenvironment.color.AddColor_g)
-            umsg.Short(ent.sbenvironment.color.AddColor_b)
-            umsg.Short(ent.sbenvironment.color.MulColor_r)
-            umsg.Short(ent.sbenvironment.color.MulColor_g)
-            umsg.Short(ent.sbenvironment.color.MulColor_b)
-            umsg.Float(ent.sbenvironment.color.Brightness)
-            umsg.Float(ent.sbenvironment.color.Contrast)
-            umsg.Float(ent.sbenvironment.color.Color)
+            net.WriteBit(1)
+            net.WriteInt(ent.sbenvironment.color.AddColor_r, 16)
+            net.WriteInt(ent.sbenvironment.color.AddColor_g, 16)
+            net.WriteInt(ent.sbenvironment.color.AddColor_b, 16)
+            net.WriteInt(ent.sbenvironment.color.MulColor_r, 16)
+            net.WriteInt(ent.sbenvironment.color.MulColor_g, 16)
+            net.WriteInt(ent.sbenvironment.color.MulColor_b, 16)
+            net.WriteFloat(ent.sbenvironment.color.Brightness)
+            net.WriteFloat(ent.sbenvironment.color.Contrast)
+            net.WriteFloat(ent.sbenvironment.color.Color)
         else
-            umsg.Bool(false)
+            net.WriteBit(0)
         end
-        umsg.Bool(false)
-        umsg.End()
-    end
+        net.WriteBit(0)
+    net.Broadcast()
 end
 
 function ENT:BloomEffect(Col_r, Col_g, Col_b, SizeX, SizeY, Passes, Darken, Multiply, Color)

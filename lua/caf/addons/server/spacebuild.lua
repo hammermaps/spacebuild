@@ -15,6 +15,9 @@ local SB = {}
 
 local status = false
 
+util.AddNetworkString("AddPlanet")
+util.AddNetworkString("AddStar")
+
 --Local stuff
 SB_DEBUG = true
 
@@ -87,61 +90,61 @@ end
 
 local function SendColorAndBloom(ent, ply)
     if IsValid(ent) then
-		umsg.Start( "AddPlanet", ply )
-			umsg.Short( ent:EntIndex())
-			umsg.String(ent:GetEnvironmentName())
-			umsg.Vector( ent:GetPos() )
-			umsg.Float( ent.sbenvironment.size )
-			if ent.sbenvironment.color and table.Count(ent.sbenvironment.color) > 0 then
-				umsg.Bool( true )
-				umsg.Short( ent.sbenvironment.color.AddColor_r )
-				umsg.Short( ent.sbenvironment.color.AddColor_g )
-				umsg.Short( ent.sbenvironment.color.AddColor_b )
-				umsg.Short( ent.sbenvironment.color.MulColor_r )
-				umsg.Short( ent.sbenvironment.color.MulColor_g )
-				umsg.Short( ent.sbenvironment.color.MulColor_b )
-				umsg.Float( ent.sbenvironment.color.Brightness )
-				umsg.Float( ent.sbenvironment.color.Contrast )
-				umsg.Float( ent.sbenvironment.color.Color )
+		net.Start("AddPlanet")
+			net.WriteInt(ent:EntIndex(), 16)
+			net.WriteString(ent:GetEnvironmentName())
+			net.WriteVector(ent:GetPos())
+			net.WriteFloat(ent.sbenvironment.size)
+			if ent.sbenvironment.color and next(ent.sbenvironment.color) ~= nil then
+				net.WriteBit(1)
+				net.WriteInt(ent.sbenvironment.color.AddColor_r, 16)
+				net.WriteInt(ent.sbenvironment.color.AddColor_g, 16)
+				net.WriteInt(ent.sbenvironment.color.AddColor_b, 16)
+				net.WriteInt(ent.sbenvironment.color.MulColor_r, 16)
+				net.WriteInt(ent.sbenvironment.color.MulColor_g, 16)
+				net.WriteInt(ent.sbenvironment.color.MulColor_b, 16)
+				net.WriteFloat(ent.sbenvironment.color.Brightness)
+				net.WriteFloat(ent.sbenvironment.color.Contrast)
+				net.WriteFloat(ent.sbenvironment.color.Color)
 			else
-				umsg.Bool(false)
+				net.WriteBit(0)
 			end
-			if ent.sbenvironment.bloom and table.Count(ent.sbenvironment.bloom) > 0 then
-				umsg.Bool(true)
-				umsg.Short( ent.sbenvironment.bloom.Col_r )
-				umsg.Short( ent.sbenvironment.bloom.Col_g )
-				umsg.Short( ent.sbenvironment.bloom.Col_b )
-				umsg.Float( ent.sbenvironment.bloom.SizeX )
-				umsg.Float( ent.sbenvironment.bloom.SizeY )
-				umsg.Float( ent.sbenvironment.bloom.Passes )
-				umsg.Float( ent.sbenvironment.bloom.Darken )
-				umsg.Float( ent.sbenvironment.bloom.Multiply )
-				umsg.Float( ent.sbenvironment.bloom.Color )
+			if ent.sbenvironment.bloom and next(ent.sbenvironment.bloom) ~= nil then
+				net.WriteBit(1)
+				net.WriteInt(ent.sbenvironment.bloom.Col_r, 16)
+				net.WriteInt(ent.sbenvironment.bloom.Col_g, 16)
+				net.WriteInt(ent.sbenvironment.bloom.Col_b, 16)
+				net.WriteFloat(ent.sbenvironment.bloom.SizeX)
+				net.WriteFloat(ent.sbenvironment.bloom.SizeY)
+				net.WriteFloat(ent.sbenvironment.bloom.Passes)
+				net.WriteFloat(ent.sbenvironment.bloom.Darken)
+				net.WriteFloat(ent.sbenvironment.bloom.Multiply)
+				net.WriteFloat(ent.sbenvironment.bloom.Color)
 			else
-				umsg.Bool(false)
+				net.WriteBit(0)
 			end
-		umsg.End()
+		net.Send(ply)
     end
 end
 
 local function SendSunBeam(ent, ply)
     if IsValid(ent) then
-		umsg.Start( "AddStar", ply )
-			umsg.Short( ent:EntIndex())
-			umsg.String(ent:GetName())
-			umsg.Vector( ent:GetPos() )
-			umsg.Float( ent.sbenvironment.size )
-		umsg.End()
+		net.Start("AddStar")
+			net.WriteInt(ent:EntIndex(), 16)
+			net.WriteString(ent:GetName())
+			net.WriteVector(ent:GetPos())
+			net.WriteFloat(ent.sbenvironment.size)
+		net.Send(ply)
      end
 end
 
 local function PlayerInitialSpawn(ply) --Send the player info about the Stars and Planets for Effects
-	if Planets and table.Count(Planets) > 0 then
+	if Planets and next(Planets) ~= nil then
 		for k, v in pairs(Planets) do
 			SendColorAndBloom(v, ply)
 		end
 	end
-	if Stars and table.Count(Stars) > 0 then
+	if Stars and next(Stars) ~= nil then
 		for k, v in pairs(Stars) do
 			SendSunBeam(v, ply)
 		end
@@ -751,6 +754,20 @@ function SB.__Construct()
 		hook.Add("PlayerInitialSpawn", "SB_PlayerInitialSpawn_Check", PlayerInitialSpawn)
 		hook.Add("PlayerSay", "SB_PlayerSay_Check", PlayerSay)
 		hook.Add("PlayerSetModel", "SB_Force_Model_Check", ForcePlyModel)
+		hook.Add("PostCleanupMap", "SB_PostCleanupMap", function()
+			Register_Environments()
+			Register_Sun()
+			local RD = CAF.GetAddon("Resource Distribution")
+			if RD and RD.GetStatus() then RD.ResetAll() end
+			local LS = CAF.GetAddon("Life Support")
+			if LS and LS.GetStatus() then
+				LS.generators.air = {}
+				LS.generators.temperature = {}
+				for _, ply in ipairs(player.GetAll()) do
+					LS.InitPlayer(ply)
+				end
+			end
+		end)
 		CAF.AddHook("think3", SB.PerformEnvironmentCheck)
 		ResetGravity()
 		for k, v in pairs(player.GetAll()) do
@@ -775,6 +792,7 @@ function SB.__Destruct()
 	hook.Remove("PlayerInitialSpawn", "SB_PlayerInitialSpawn_Check")
 	hook.Remove("PlayerSay", "SB_PlayerSay_Check")
 	hook.Remove("PlayerSetModel", "SB_Force_Model_Check")
+	hook.Remove("PostCleanupMap", "SB_PostCleanupMap")
 	CAF.RemoveHook("think3", SB.PerformEnvironmentCheck)
 	ResetGravity()
 	CAF.RemoveServerTag("SB")

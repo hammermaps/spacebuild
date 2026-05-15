@@ -33,6 +33,7 @@ local function WriteLong(long)
 end
 
 util.AddNetworkString("RD_Entity_Data")
+util.AddNetworkString("RD_ClearNets")
 local function sendEntityData(ply, entid, rddata)
     net.Start("RD_Entity_Data")
     WriteShort(entid) --send key to update
@@ -192,8 +193,8 @@ local function ClearEntities()
 end
 
 local function ClearNets()
-	umsg.Start("RD_ClearNets")
-	umsg.End()
+	net.Start("RD_ClearNets")
+	net.Broadcast()
 end
 
 local function RD_Initial_Spawn( ply )
@@ -277,6 +278,15 @@ end
 function RD.AddResourcesToSend()
 
 end
+
+function RD.ResetAll()
+	nextnetid = 1
+	ClearNets()
+	ClearEntities()
+	nettable = {}
+	ent_table = {}
+end
+
 CAF.RegisterAddon("Resource Distribution", RD, "1")
 
 --[[

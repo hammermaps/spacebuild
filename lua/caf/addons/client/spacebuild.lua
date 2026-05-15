@@ -184,51 +184,51 @@ local function DrawSunEffects( )
 
 end
 
-local function recPlanet( msg )
-	local ent = msg:ReadShort()
+local function recPlanet( len, client )
+	local ent = net.ReadInt(16)
 	local hash  = {}
 	hash.ent = ents.GetByIndex(ent)
-	hash.name = msg:ReadString()
-	hash.position = msg:ReadVector()
-	hash.radius = msg:ReadFloat()
-	if msg:ReadBool() then
+	hash.name = net.ReadString()
+	hash.position = net.ReadVector()
+	hash.radius = net.ReadFloat()
+	if net.ReadBit() == 1 then
 		hash.color = true
-		hash.AddColor_r = msg:ReadShort()
-		hash.AddColor_g = msg:ReadShort()
-		hash.AddColor_b = msg:ReadShort()
-		hash.MulColor_r = msg:ReadShort()		
-		hash.MulColor_g = msg:ReadShort()
-		hash.MulColor_b = msg:ReadShort()
-		hash.Brightness = msg:ReadFloat()
-		hash.Contrast = msg:ReadFloat()
-		hash.CColor = msg:ReadFloat()
+		hash.AddColor_r = net.ReadInt(16)
+		hash.AddColor_g = net.ReadInt(16)
+		hash.AddColor_b = net.ReadInt(16)
+		hash.MulColor_r = net.ReadInt(16)
+		hash.MulColor_g = net.ReadInt(16)
+		hash.MulColor_b = net.ReadInt(16)
+		hash.Brightness = net.ReadFloat()
+		hash.Contrast = net.ReadFloat()
+		hash.CColor = net.ReadFloat()
 	else
 		hash.color = false
 	end
-	if msg:ReadBool() then
+	if net.ReadBit() == 1 then
 		hash.bloom = true
-		hash.Col_r = msg:ReadShort()
-		hash.Col_g = msg:ReadShort()
-		hash.Col_b = msg:ReadShort()
-		hash.SizeX = msg:ReadFloat()
-		hash.SizeY = msg:ReadFloat()
-		hash.Passes = msg:ReadFloat()
-		hash.Darken = msg:ReadFloat()
-		hash.Multiply = msg:ReadFloat()
-		hash.BColor = msg:ReadFloat()
+		hash.Col_r = net.ReadInt(16)
+		hash.Col_g = net.ReadInt(16)
+		hash.Col_b = net.ReadInt(16)
+		hash.SizeX = net.ReadFloat()
+		hash.SizeY = net.ReadFloat()
+		hash.Passes = net.ReadFloat()
+		hash.Darken = net.ReadFloat()
+		hash.Multiply = net.ReadFloat()
+		hash.BColor = net.ReadFloat()
 	else
 		hash.bloom = false
 	end
 	planets[ent] = hash
 end
-usermessage.Hook( "AddPlanet", recPlanet );
+net.Receive("AddPlanet", recPlanet)
 
 -- receive sun information
-local function recvSun( msg )
-	local ent = msg:ReadShort()
-	local tmpname = msg:ReadString()
-	local position = msg:ReadVector()
-	local radius = msg:ReadFloat()
+local function recvSun( len, client )
+	local ent = net.ReadInt(16)
+	local tmpname = net.ReadString()
+	local position = net.ReadVector()
+	local radius = net.ReadFloat()
 	stars[ ent] = {
 		Ent = ents.GetByIndex(ent),
 		name = tmpname,
@@ -237,7 +237,7 @@ local function recvSun( msg )
 		BeamRadius = radius * 1.5, --*3
 	}
 end
-usermessage.Hook( "AddStar", recvSun );
+net.Receive("AddStar", recvSun)
 
 --End Local Functions
 

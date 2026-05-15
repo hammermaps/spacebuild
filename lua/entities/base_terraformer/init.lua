@@ -4,6 +4,8 @@ util.PrecacheSound("Airboat_engine_idle")
 util.PrecacheSound("Airboat_engine_stop")
 util.PrecacheSound("apc_engine_start")
 
+util.AddNetworkString("TF_Open_Menu")
+
 include('shared.lua')
 
 function ENT:Initialize()
@@ -103,9 +105,9 @@ function ENT:TurnOffOverdrive()
 end
 
 function ENT:SetActive(value, caller)
-    umsg.Start("TF_Open_Menu", caller)
-    umsg.Entity(self)
-    umsg.End()
+    net.Start("TF_Open_Menu")
+    net.WriteEntity(self)
+    net.Send(caller)
 end
 
 function ENT:TriggerInput(iname, value)
