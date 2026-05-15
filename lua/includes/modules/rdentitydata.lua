@@ -31,7 +31,7 @@ function list:Init(entity)
 	self.clear = false;
 	self.new = true;
 	self.haschanged = false;
-	entities[entityID] = self;
+	entities[self.id] = self;
 end
 
 --[[
@@ -44,7 +44,7 @@ function Create(entity)
 	if not entity then
 		return nil
 	end
-	tmp = {}
+	local tmp = {}
 	setmetatable( tmp, list )
 	tmp:Init(entity);
 	return tmp

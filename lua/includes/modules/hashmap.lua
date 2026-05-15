@@ -67,7 +67,7 @@ function list:SetCheckType(thetype, isfunc, thetype2, isfunc2)
 		self.keytype = nil
 	end
 	
-	if thetype2 and isfunc then
+	if thetype2 and isfunc2 then
 		self.hasValueType = true
 		self.valuetype = nil
 		self.customValueCheck = true
@@ -179,7 +179,7 @@ end
 
 ]]
 function list:ContainsKey( key )
-	return self.table[key]
+	return self.table[key] ~= nil
 end
 
 --[[
@@ -343,7 +343,7 @@ end
 		Returns the new HashMap object
 ]]
 function Create( thetype, isfunc, thetype2, isfunc2 )
-	tmp = {}
+	local tmp = {}
 	setmetatable( tmp, list )
 	tmp:Create(thetype, isfunc, thetype2, isfunc2 )
 	return tmp

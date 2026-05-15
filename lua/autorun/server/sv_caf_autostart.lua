@@ -45,7 +45,7 @@ hooks["TOOL_Allow_Entity_Spawn"] = {}
 
 function CAF2.AllowSpawn(type, sub_type, class, model)
 	for k , v in pairs(hooks["TOOL_Allow_Entity_Spawn"]) do
-		local ok, err = pcall(type, sub_type, class, model)
+		local ok, err = pcall(v, type, sub_type, class, model)
 		if not (ok) then
 			CAF2.WriteToDebugFile("CAF_Hooks", "TOOL_Allow_Entity_Spawn Error: " .. err .."\n")
 		else
@@ -94,8 +94,8 @@ local function SaveAddonStatus(addon, status)
 	local id = sql.SQLStr(addon)
 	local stat = sql.SQLStr(status)
 	local data = sql.Query("INSERT INTO CAF_AddonStatus(id, status) VALUES("..id..", "..stat..");")
-	if data then 
-		Msg("Error making a profile for "..ply:Nick().."\n"..data.."\n") 
+	if data == false then
+		Msg("Error saving addon status: "..tostring(sql.LastError() or data).."\n")
 	end
 end
 
@@ -245,7 +245,7 @@ function CAF2.ClearDebugFile(filename)
 	local contents = file.Read("CAF_Debug/server/"..filename..".txt")
 	contents = contents or "" 
 	file.Write("CAF_Debug/server/"..filename..".txt", "")
-	return content
+	return contents
 end
 
 --[[

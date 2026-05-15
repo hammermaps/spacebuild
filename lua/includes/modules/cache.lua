@@ -92,11 +92,12 @@ end
 local id = 0;
 
 function create(ttl, remove)
-    if not ttl or tonumber(ttl) <= 0 then ttl = 1 end
+    ttl = tonumber(ttl)
+    if not ttl or ttl <= 0 then ttl = 1 end
     local tmp = {}
     setmetatable(tmp, list)
     tmp:create(ttl, remove)
-    timer.Create("caf_cache_timer_" .. tostring(id), ttl * 1000, 0, function()
+    timer.Create("caf_cache_timer_" .. tostring(id), ttl, 0, function()
         removeOldData(tmp)
     end)
     id = id + 1;
@@ -111,6 +112,5 @@ end
 function list:getList()
     return self.contents;
 end
-
 
 

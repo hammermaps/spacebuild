@@ -24,7 +24,7 @@ if not inputs or not inputs.version or inputs.version < version then
         tostring,
         tonumber,
         function(vector_string) return {} end, --TODO
-        function(ent_id) return Entity(tonumer(entid)) end
+        function(ent_id) return Entity(tonumber(ent_id)) end
     }
 
     local inpts = inputs;
