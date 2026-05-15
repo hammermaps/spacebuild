@@ -12,16 +12,16 @@ local SB_AIR_O2 = 0
 local SB_AIR_CO2 = 1
 
 local function CheckRegulators()
+	local toremove = {}
 	for k, v in pairs(LS.generators.air) do
-		if not v then 
-			table.remove(LS.generators.air, k)
-		end
+		if not v then toremove[#toremove+1] = k end
 	end
+	for _, k in ipairs(toremove) do LS.generators.air[k] = nil end
+	toremove = {}
 	for k, v in pairs(LS.generators.temperature) do
-		if not v then 
-			table.remove(LS.generators.temperature, k)
-		end
+		if not v then toremove[#toremove+1] = k end
 	end
+	for _, k in ipairs(toremove) do LS.generators.temperature[k] = nil end
 end
 
 LS.generators = {}
@@ -235,19 +235,19 @@ function LS.AddTemperatureRegulator(ent)
 end
 
 function LS.RemoveAirRegulator(ent)
+	local toremove = {}
 	for k, v in pairs(LS.generators.air) do
-		if v == ent then
-			table.remove(LS.generators.air, k)
-		end
+		if v == ent then toremove[#toremove+1] = k end
 	end
+	for _, k in ipairs(toremove) do table.remove(LS.generators.air, k) end
 end
 
 function LS.RemoveTemperatureRegulator(ent)
+	local toremove = {}
 	for k, v in pairs(LS.generators.temperature) do
-		if v == ent then
-			table.remove(LS.generators.temperature, k)
-		end
+		if v == ent then toremove[#toremove+1] = k end
 	end
+	for _, k in ipairs(toremove) do table.remove(LS.generators.temperature, k) end
 end
 
 function LS.GetAirRegulators()

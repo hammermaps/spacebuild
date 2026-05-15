@@ -156,6 +156,14 @@ function CAF2.ConstructAddon(len, client)
 end
 net.Receive("CAF_Addon_Construct", CAF2.ConstructAddon)
 
+function CAF2.ConstructAddonList(len, client)
+    local count = net.ReadUInt(16)
+    for _ = 1, count do
+        OnAddonConstruct(net.ReadString())
+    end
+end
+net.Receive("CAF_Addon_List", CAF2.ConstructAddonList)
+
 function CAF2.DestructAddon(len, client)
 	local name = net.ReadString()
 	OnAddonDestruct(name)

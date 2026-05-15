@@ -41,15 +41,6 @@ function ENT:Repair()
     self:SetHealth(self:GetMaxHealth())
 end
 
---[[
-function ENT:AcceptInput(name,activator,caller)
-	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
-		self:SetActive( nil, caller )
-	end
-end
-]]
---Considering I don't want to break RD until it's working, I'll work inside commented code...for now.
-
 function ENT:AcceptInput(name, activator, caller)
     if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
         if self.Inputs and caller.useaction and caller.useaction == true then

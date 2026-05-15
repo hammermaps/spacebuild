@@ -105,10 +105,10 @@ end
 concommand.Add( "UnlinkPump", UnlinkPump )    
 
 local function UserConnect(ply)
-	if table.Count(pumps) > 0 then
+	if next(pumps) ~= nil then
 		for k, v in pairs(pumps) do
 			if IsValid(v) then
-				if table.Count(v.ResourcesToSend) > 0 then
+				if next(v.ResourcesToSend) ~= nil then
 					for l, w in pairs(v.ResourcesToSend) do
 						umsg.Start("RD_Add_ResourceRate_to_Pump", ply)
 							umsg.Entity(v)
@@ -283,14 +283,11 @@ function ENT:Think()
 		if not self.otherpump then
 			self:TurnOff()
 		else
-			if self.ResourcesToSend and table.Count(self.ResourcesToSend) > 0 then
+			if self.ResourcesToSend and next(self.ResourcesToSend) ~= nil then
 				for k, v in pairs(self.ResourcesToSend) do
-					if RD.GetNetResourceAmount(self.netid, k) > 0 then
-						if RD.GetNetResourceAmount(self.netid, k) > v then
-							self:Send(k, v)
-						else
-							self:Send(k, RD.GetNetResourceAmount(self.netid, k))
-						end
+					local amt = RD.GetNetResourceAmount(self.netid, k)
+					if amt > 0 then
+						self:Send(k, amt < v and amt or v)
 					end
 				end
 			end

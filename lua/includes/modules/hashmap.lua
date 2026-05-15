@@ -200,7 +200,7 @@ end
 
 ]]
 function list:IsEmpty()
-	return table.Count(self.table) == 0
+	return next(self.table) == nil
 end
 
 --[[
