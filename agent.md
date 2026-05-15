@@ -115,3 +115,4 @@ The CI pipeline is defined in `.travis.yml` and runs luacheck on every push.
 - Facepunch thread: <https://facepunch.com/showthread.php?t=1519499>
 - Discord: <https://discord.gg/3A4dPhD>
 - SBEP (Expansion Pack): <https://github.com/spacebuild/sbep>
+- GLua API Reference: <https://samuelmaddock.github.io/glua-docs/>

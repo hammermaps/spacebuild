@@ -74,6 +74,7 @@ Current contributors: @snakesvx · @generalwrex · @X-Coder · @CaveeJohnson
 
 - [`docs/OPTIMIZATION_PLAN.md`](docs/OPTIMIZATION_PLAN.md) – performance and maintainability roadmap
 - [`agent.md`](agent.md) – repository guide for AI coding agents
+- [GLua API Reference](https://samuelmaddock.github.io/glua-docs/) – community-maintained GLua documentation
 
 ---
 
