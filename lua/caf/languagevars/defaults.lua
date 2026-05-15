@@ -106,6 +106,14 @@ t["This Addon is already Active!"] = "This Addon is already Active!"
 t["This Addon is already disabled!"] = "This Addon is already disabled!"
 t["Not on a Spacebuild Map!"] = "Not on a Spacebuild Map!"
 
+--Life Support HUD
+t["Suit"] = "Suit"
+t["Environment"] = "Environment"
+t["Pressure"] = "Pressure"
+t["Habitable"] = "Habitable"
+t["Message Log"] = "Message Log"
+t["Not Implemented Yet"] = "Not Implemented Yet"
+
 CAF.LANGUAGE["en"] = t;
 
 local t = CAF.LANGUAGE["nl"] or {}
@@ -205,6 +213,14 @@ t["caf_stool_entity_model_admin_required"] = "Om dit Stool Entity Model te gebru
 t["This Addon is already Active!"] = "Deze Addon is al actief!"
 t["This Addon is already disabled!"] = "Deze Addon is niet actief!"
 t["Not on a Spacebuild Map!"] = "Niet op een Spacebuild Kaart!"
+
+--Life Support HUD
+t["Suit"] = "Ruimtepak"
+t["Environment"] = "Omgeving"
+t["Pressure"] = "Druk"
+t["Habitable"] = "Bewoonbaar"
+t["Message Log"] = "Berichtenlogboek"
+t["Not Implemented Yet"] = "Nog niet geïmplementeerd"
 
 CAF.LANGUAGE["nl"] = t;
 
@@ -306,6 +322,14 @@ t["This Addon is already Active!"] = "Dieses Addon ist bereits aktiv!"
 t["This Addon is already disabled!"] = "Dieses Addon ist bereits deaktiviert!"
 t["Not on a Spacebuild Map!"] = "Dieses ist keine Spacebuild-Map!"
 
+--Life Support HUD
+t["Suit"] = "Anzug"
+t["Environment"] = "Umgebung"
+t["Pressure"] = "Druck"
+t["Habitable"] = "Bewohnbar"
+t["Message Log"] = "Nachrichtenprotokoll"
+t["Not Implemented Yet"] = "Noch nicht implementiert"
+
 CAF.LANGUAGE["de"] = t;
 
 local t = CAF.LANGUAGE["pt-BR"] or {}
@@ -405,6 +429,14 @@ t["caf_stool_entity_model_admin_required"] = "Esse Modelo de Entidade Stool é e
 t["This Addon is already Active!"] = "Esse Addon já está Ativo!"
 t["This Addon is already disabled!"] = "Esse Addon já está Desativado!"
 t["Not on a Spacebuild Map!"] = "Esse não é um Mapa Spacebuild!"
+
+--Life Support HUD
+t["Suit"] = "Traje"
+t["Environment"] = "Ambiente"
+t["Pressure"] = "Pressão"
+t["Habitable"] = "Habitável"
+t["Message Log"] = "Registro de Mensagens"
+t["Not Implemented Yet"] = "Ainda não implementado"
 
 CAF.LANGUAGE["pt-BR"] = t;
 
