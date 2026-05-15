@@ -7,7 +7,7 @@ local hooks = CAF3.hooks
 
 --Language Settings
 
-local DefaultLang = "english"
+local DefaultLang = "en"
 
 function CAF2.begintime()
 	return os.clock( );
