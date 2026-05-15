@@ -94,8 +94,8 @@ local function SaveAddonStatus(addon, status)
 	local id = sql.SQLStr(addon)
 	local stat = sql.SQLStr(status)
 	local data = sql.Query("INSERT INTO CAF_AddonStatus(id, status) VALUES("..id..", "..stat..");")
-	if data then 
-		Msg("Error saving addon status: "..data.."\n") 
+	if data == false then
+		Msg("Error saving addon status: "..tostring(sql.LastError() or data).."\n")
 	end
 end
 

@@ -33,6 +33,7 @@ end
 ---Note: limit may be a function, value, or nil. So within tool make sure to check against function if type(limit)=="function"
 --Optional: categories
 function RESOURCES:ToolRegister(name, description, limit)
+        self.Tools = self.Tools or {}
         self.Tools[name] = self.Tools[name] or {}
         self.Tools[name].limit = limit or 30
         self.Tools[name].description = description or ""
@@ -62,7 +63,7 @@ end
 --@params makefunc Backwards Compatibilty really
 function RESOURCES:ToolRegisterDevice(toolname, categoryname, name, class, model, makefunc)
         if type(name) == "table" then
-                for _, v in pairs(name) do CAF_AddStoolItem(toolname, categoryname, v.name, v.class, v.model, v.makefunc) end
+                for _, v in pairs(name) do CAF_AddStoolItem(toolname, v.name, v.model, v.class, v.makefunc) end
                 return
         end
  
@@ -76,7 +77,7 @@ function RESOURCES:ToolRegisterDevice(toolname, categoryname, name, class, model
                 makefunc = makefunc
         }
  
-        CAF_AddStoolItem( toolname, categoryname, name, class, model, makefunc )
+        CAF_AddStoolItem( toolname, name, model, class, makefunc )
 end
 
 if (SERVER) then
@@ -111,11 +112,11 @@ if (SERVER) then
 		if (type(res) == "table") then
 			local amtTotal = 0
 			for k,v in pairs(res) do 
-				amtTotal = amtTotal + RD.Consume(self,v,amt)
+				amtTotal = amtTotal + RD.ConsumeResource(self,v,amt)
 			end
 			return amtTotal
 		elseif (type(res) == "string") then
-			return RD.Consume(self,res,amt)
+			return RD.ConsumeResource(self,res,amt)
 		end
 	end
 	--- Supplies the Resource to the connected network.
@@ -206,7 +207,6 @@ if (SERVER) then
 
 
 end
-
 
 
 
