@@ -96,7 +96,7 @@ function create(ttl, remove)
     local tmp = {}
     setmetatable(tmp, list)
     tmp:create(ttl, remove)
-    timer.Create("caf_cache_timer_" .. tostring(id), ttl * 1000, 0, function()
+    timer.Create("caf_cache_timer_" .. tostring(id), ttl, 0, function()
         removeOldData(tmp)
     end)
     id = id + 1;

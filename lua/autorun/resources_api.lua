@@ -33,9 +33,9 @@ end
 ---Note: limit may be a function, value, or nil. So within tool make sure to check against function if type(limit)=="function"
 --Optional: categories
 function RESOURCES:ToolRegister(name, description, limit)
-        self.Tools[toolname] = self.Tools[toolname] or {}
-        self.Tools[toolname].limit = limit or 30
-        self.Tools[toolname].description = description or ""
+        self.Tools[name] = self.Tools[name] or {}
+        self.Tools[name].limit = limit or 30
+        self.Tools[name].description = description or ""
  
  
 end
@@ -76,7 +76,7 @@ function RESOURCES:ToolRegisterDevice(toolname, categoryname, name, class, model
                 makefunc = makefunc
         }
  
-        CAF_AddStoolItem( category, name, model, class, makefunc )
+        CAF_AddStoolItem( toolname, categoryname, name, class, model, makefunc )
 end
 
 if (SERVER) then
@@ -109,9 +109,11 @@ if (SERVER) then
 	--@returns Amount Consumed.. If it is coded by Developers to.
 	function meta:ResConsume( res, amt )
 		if (type(res) == "table") then
+			local amtTotal = 0
 			for k,v in pairs(res) do 
-				local amtTotal = amtTotal + RD.Consume(self,v,amt)
+				amtTotal = amtTotal + RD.Consume(self,v,amt)
 			end
+			return amtTotal
 		elseif (type(res) == "string") then
 			return RD.Consume(self,res,amt)
 		end
@@ -123,8 +125,9 @@ if (SERVER) then
 	--@returns Amount that could not be supplied.
 	function meta:ResourcesSupply( res, amt )
 		if (type(res) == "table") then
+			local amtTotal = 0
 			for k,v in pairs(res) do 
-				local amtTotal = amtTotal + RD.SupplyResource(self,v,amt)
+				amtTotal = amtTotal + RD.SupplyResource(self,v,amt)
 			end
 			return amtTotal
 		elseif (type(res) == "string") then
@@ -159,7 +162,7 @@ if (SERVER) then
 	--@params res The resource you want the amount of. (String or Table)
 	function meta:ResourcesGetAmount( res )
 		if (type(res) == "table") then
-			resources = {}
+			local resources = {}
 			for _,v in pairs(res) do
 				resources[v] = RD.GetResourceAmount(self, v)
 			end
@@ -173,7 +176,7 @@ if (SERVER) then
 	--@params res The resource you want to return the amount of. (String or Table)
 	function meta:ResourceGetDeviceCapaciy( res )
 		if (type(res) == "table") then
-			resources = {}
+			local resources = {}
 			for _,v in pairs(res) do
 				resources[v] = RD.GetUnitCapacity(self, v)
 			end

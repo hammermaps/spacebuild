@@ -215,7 +215,7 @@ end
 		Returns a copy of the current ArrayList()
 ]]
 function list:Clone()
-	tmp = {}
+	local tmp = {}
 	setmetatable( tmp, list )
 	tmp:Create(self.type)
 	tmp:SetTable(self:ToTable())
@@ -306,6 +306,7 @@ function list:Remove( item, isindex )
 		for k, v in pairs(self.table) do
 			if v == item then
 				table.remove(self.table, k)
+				break
 			end
 		end
 	end
@@ -369,7 +370,7 @@ end
 		Returns the new ArrayList object
 ]]
 function Create( thetype, isfunc )
-	tmp = {}
+	local tmp = {}
 	setmetatable( tmp, list )
 	tmp:Create(thetype, isfunc )
 	return tmp
