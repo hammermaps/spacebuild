@@ -1,68 +1,89 @@
 [![Issue Count](https://codeclimate.com/github/spacebuild/spacebuild/badges/issue_count.svg)](https://codeclimate.com/github/spacebuild/spacebuild)
+[![Build Status](https://travis-ci.org/spacebuild/spacebuild.svg?branch=master)](https://travis-ci.org/spacebuild/spacebuild)
 
-Spacebuild
-==========
+# Spacebuild
 
-[Garry's Mod][garrysmod] Spacebuild Project
+[Garry's Mod][garrysmod] Spacebuild Project – space environments, resource distribution, and life-support systems for GMod.
 
-Facepunch Page: [Located Here][facepunch]
+| | |
+|---|---|
+| 💬 **Discord** | [Join here][discord] |
+| 🧵 **Facepunch** | [Thread][facepunch] |
+| 🎮 **Steam Workshop** | [Spacebuild 3][workshop] |
+| 🔧 **Expansion Pack** | [SBEP repository](https://github.com/spacebuild/sbep) |
 
-Discord Server: [Located Here][discord]
+> **Note:** Please do not upload to the Workshop. Use the **official** Workshop version – this repository is kept in sync with it.
 
-The Spacebuild Expansion Pack is not part of this repository. It is [Located Here](https://github.com/spacebuild/sbep)
+---
 
-*Please do not upload to the workshop, use the* **Official** *workshop version, this repository will be synced with it.*
+## Build Status
 
-# Build Status
-* Master [![Build Status](https://travis-ci.org/spacebuild/spacebuild.svg?branch=master)](https://travis-ci.org/spacebuild/spacebuild)
-* SB2 [![Build Status](https://travis-ci.org/spacebuild/spacebuild.svg?branch=sb2)](https://travis-ci.org/spacebuild/spacebuild)
-* SB2.5 [![Build Status](https://travis-ci.org/spacebuild/spacebuild.svg?branch=sb2.5)](https://travis-ci.org/spacebuild/spacebuild)
-* SB3 [![Build Status](https://travis-ci.org/spacebuild/spacebuild.svg?branch=sb3)](https://travis-ci.org/spacebuild/spacebuild)
-* SB4 [![Build Status](https://travis-ci.org/spacebuild/spacebuild.svg?branch=sb4)](https://travis-ci.org/spacebuild/spacebuild)
+| Branch | Status |
+|--------|--------|
+| `master` | [![Build Status](https://travis-ci.org/spacebuild/spacebuild.svg?branch=master)](https://travis-ci.org/spacebuild/spacebuild) |
+| `sb3` | [![Build Status](https://travis-ci.org/spacebuild/spacebuild.svg?branch=sb3)](https://travis-ci.org/spacebuild/spacebuild) |
+| `sb4` | [![Build Status](https://travis-ci.org/spacebuild/spacebuild.svg?branch=sb4)](https://travis-ci.org/spacebuild/spacebuild) |
+| `sb2` | [![Build Status](https://travis-ci.org/spacebuild/spacebuild.svg?branch=sb2)](https://travis-ci.org/spacebuild/spacebuild) |
+| `sb2.5` | [![Build Status](https://travis-ci.org/spacebuild/spacebuild.svg?branch=sb2.5)](https://travis-ci.org/spacebuild/spacebuild) |
 
-# Status
+---
 
-    **Master branch, current release version (sb3)
+## Status
 
-    **Spacebuild 3** - Current Working Version
+| Version | State |
+|---------|-------|
+| **Spacebuild 3** (`master`) | ✅ Current stable release |
+| **Spacebuild 4** (`sb4`) | 🚧 Work in progress |
+| **Spacebuild 2 / 2.5** | ❌ No longer supported |
 
-    **Official** Workshop version: http://steamcommunity.com/sharedfiles/filedetails/?id=693838486
+**Official Workshop version:** <http://steamcommunity.com/sharedfiles/filedetails/?id=693838486>
 
-    **Spacebuild 2** - Not Supported Anymore
+---
 
-    **Spacebuild 4** - WiP ( Yes its still in development )
+## Workshop Installation
 
+Spacebuild 3 is available via the Steam Workshop. Go to [its Workshop page][workshop] and press **Subscribe** – it will automatically appear in Garry's Mod.
 
-# Contributors
-    @snakesvx
-    @generalwrex
-    @X-Coder
-    @CaveeJohnson
-   
-   
-     If you would like to help just drop a pull request in with your changes! 
-     Please try to keep your coding clean!
+---
 
-# Workshop Installation
+## Manual Installation
 
-Spacebuild 3 is available via the Steam Workshop! Go to [its Workshop page][workshop] and press `Subscribe`, and it will automatically appear in Garry's Mod.
+How to use TortoiseGit to clone/pull:
+<http://steamcommunity.com/groups/spacebuild/discussions/0/144513670980243163/>
 
-# Manual Installation
+Clone this repository into your `addons` folder:
 
-How to Tortoise Git + Clone/Pull: http://steamcommunity.com/groups/spacebuild/discussions/0/144513670980243163/
+```bat
+cd "%programfiles(x86)%\Steam\SteamApps\common\GarrysMod\garrysmod\addons"
+git clone https://github.com/spacebuild/spacebuild.git spacebuild
+```
 
-Simply clone this repository into your `addons` folder:
+---
 
-    cd "%programfiles(x86)%/Steam/SteamApps/common/GarrysMod/garrysmod/addons"
-    git clone https://github.com/spacebuild/spacebuild.git spacebuild
+## Contributing
 
-# License
+Pull requests are welcome! Please keep your code clean and follow the existing style.
+
+Current contributors: @snakesvx · @generalwrex · @X-Coder · @CaveeJohnson
+
+> **For AI agents and automated tooling:** see [`agent.md`](agent.md) for a full guide to the repository structure, architecture, coding conventions, and performance rules.
+
+---
+
+## Documentation
+
+- [`docs/OPTIMIZATION_PLAN.md`](docs/OPTIMIZATION_PLAN.md) – performance and maintainability roadmap
+- [`agent.md`](agent.md) – repository guide for AI coding agents
+
+---
+
+## License
 
 Copyright 2009-2016 SB Dev Team
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+<http://www.apache.org/licenses/LICENSE-2.0>
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
