@@ -126,7 +126,7 @@ end
 function list:AddAll( items, index )
 	local ok = true
 	local amount = 0
-	for k, v in pairs(items) do
+	for k, v in ipairs(items) do
 		if not self:Add(v, index) then
 			ok = false
 			amount = amount + 1
@@ -253,7 +253,7 @@ end
 ]]
 function list:IndexOf( item )
 	if not self:IsEmpty() then
-		for k, v in pairs(self.table) do
+		for k, v in ipairs(self.table) do
 			if v == item then
 				return k
 			end
@@ -269,7 +269,7 @@ end
 
 ]]
 function list:IsEmpty()
-	return table.Count(self.table) == 0
+	return next(self.table) == nil
 end
 
 --[[
@@ -282,7 +282,7 @@ end
 function list:LastIndexOf( item ) 
 	local last = -1
 	if not self:IsEmpty() then
-		for k, v in pairs(self.table) do
+		for k, v in ipairs(self.table) do
 			if v == item then
 				last = k
 			end
@@ -303,7 +303,7 @@ function list:Remove( item, isindex )
 	if isindex then
 		table.remove(self.table, item)
 	else
-		for k, v in pairs(self.table) do
+		for k, v in ipairs(self.table) do
 			if v == item then
 				table.remove(self.table, k)
 				break

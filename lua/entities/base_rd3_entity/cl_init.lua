@@ -27,11 +27,11 @@ function ENT:DrawTranslucent(bDontDrawModel)
 end
 
 function ENT:GetOOO()
-    return self:GetNetworkedInt("OOO") or 0
+    return self:GetNWInt("OOO") or 0
 end
 
 function ENT:DoNormalDraw(bDontDrawModel)
-    local mode = self:GetNetworkedInt("overlaymode")
+    local mode = self:GetNWInt("overlaymode")
     if RD_OverLay_Mode and mode ~= 0 then -- Don't enable it if disabled by default!
         if RD_OverLay_Mode.GetInt then
             local nr = math.Round(RD_OverLay_Mode:GetInt())

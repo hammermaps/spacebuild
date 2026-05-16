@@ -60,14 +60,12 @@ function ENT:GetPriority()
 end
 
 local function SendSunBeam(ent)
-    for k, ply in pairs(player.GetAll()) do
-        umsg.Start("AddStar", ply)
-        --umsg.Entity( ent ) --planet.num
-        umsg.Short(ent:EntIndex())
-        umsg.Vector(ent:GetPos()) --planet.num
-        umsg.Float(ent.sbenvironment.size)
-        umsg.End()
-    end
+    net.Start("AddStar")
+        net.WriteInt(ent:EntIndex(), 16)
+        net.WriteString(ent:GetName())
+        net.WriteVector(ent:GetPos())
+        net.WriteFloat(ent.sbenvironment.size)
+    net.Broadcast()
 end
 
 function ENT:CreateEnvironment(radius, temp1, temp2, temp3, name)

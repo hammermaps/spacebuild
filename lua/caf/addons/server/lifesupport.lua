@@ -2,6 +2,9 @@ local LS = {}
 
 local status = false
 
+util.AddNetworkString("LS_umsg1")
+util.AddNetworkString("LS_umsg2")
+
 --Stuff that can't be disabled
 CreateConVar( "LS_AllowNukeEffect", "1" ) --Update to something changeable later on
 --end 
@@ -11,17 +14,24 @@ CreateConVar( "LS_AllowNukeEffect", "1" ) --Update to something changeable later
 local SB_AIR_O2 = 0
 local SB_AIR_CO2 = 1
 
+local function RemoveEntriesByIndex(list, indices)
+	table.sort(indices, function(a, b) return a > b end)
+	for _, k in ipairs(indices) do
+		table.remove(list, k)
+	end
+end
+
 local function CheckRegulators()
+	local toremove = {}
 	for k, v in pairs(LS.generators.air) do
-		if not v then 
-			table.remove(LS.generators.air, k)
-		end
+		if not v then toremove[#toremove+1] = k end
 	end
+	RemoveEntriesByIndex(LS.generators.air, toremove)
+	toremove = {}
 	for k, v in pairs(LS.generators.temperature) do
-		if not v then 
-			table.remove(LS.generators.temperature, k)
-		end
+		if not v then toremove[#toremove+1] = k end
 	end
+	RemoveEntriesByIndex(LS.generators.temperature, toremove)
 end
 
 LS.generators = {}
@@ -37,6 +47,10 @@ local function LSSpawnFunc( ply )
 	if not ply:Ls_Init() then
 		ErrorNoHalt("Error initializing player\n")
 	end
+end
+
+function LS.InitPlayer(ply)
+	LSSpawnFunc(ply)
 end
 
 local function LSResetSpawnFunc( ply )
@@ -126,6 +140,21 @@ function LS.__Construct()
 	RD.AddProperResourceName("liquid nitrogen", CAF.GetLangVar("Liquid Nitrogen"))
 	hook.Add( "PlayerInitialSpawn", "LS_Core_SpawnFunc", LSSpawnFunc )
 	hook.Add( "PlayerSpawn", "LS_Core_ResetSpawnFunc", LSResetSpawnFunc )
+	hook.Add("PlayerDisconnected", "LS_PlayerDisconnected", function(ply)
+		if ply.suit then ply.suit = nil end
+		if ply.caf and ply.caf.custom then ply.caf.custom.ls = nil end
+	end)
+	hook.Add("PlayerDeath", "LS_PlayerDeath", function(ply, inflictor, attacker)
+		if ply.caf and ply.caf.custom and ply.caf.custom.ls then
+			ply.caf.custom.ls.inspace = false
+		end
+	end)
+	hook.Add("PlayerLeaveVehicle", "LS_vehicle_leave", function(ply, veh)
+		if IsValid(ply) and ply.environment then
+			local SB = CAF.GetAddon("Spacebuild")
+			if SB then SB.UpdatePlayerEnvironment(ply) end
+		end
+	end)
 	CAF.AddHook("think3", PlayerLSThink)
 	CAF.AddHook("OnAddonDestruct", AddonDisabled)
 	CAF.AddServerTag("LSC")
@@ -141,6 +170,9 @@ function LS.__Destruct()
 	hook.Remove( "PlayerInitialSpawn", "LS_Core_SpawnFunc")
 	hook.Remove( "PlayerSpawn", "LS_Core_ResetSpawnFunc")
 	hook.Remove( "PlayerSpawnedVehicle", "LS_vehicle_spawn")
+	hook.Remove( "PlayerDisconnected", "LS_PlayerDisconnected")
+	hook.Remove( "PlayerDeath", "LS_PlayerDeath")
+	hook.Remove( "PlayerLeaveVehicle", "LS_vehicle_leave")
 	CAF.RemoveHook("think3", PlayerLSThink)
 	CAF.RemoveHook("OnAddonDestruct", AddonDisabled)
 	local SB = CAF.GetAddon("Spacebuild")
@@ -235,19 +267,19 @@ function LS.AddTemperatureRegulator(ent)
 end
 
 function LS.RemoveAirRegulator(ent)
+	local toremove = {}
 	for k, v in pairs(LS.generators.air) do
-		if v == ent then
-			table.remove(LS.generators.air, k)
-		end
+		if v == ent then toremove[#toremove+1] = k end
 	end
+	RemoveEntriesByIndex(LS.generators.air, toremove)
 end
 
 function LS.RemoveTemperatureRegulator(ent)
+	local toremove = {}
 	for k, v in pairs(LS.generators.temperature) do
-		if v == ent then
-			table.remove(LS.generators.temperature, k)
-		end
+		if v == ent then toremove[#toremove+1] = k end
 	end
+	RemoveEntriesByIndex(LS.generators.temperature, toremove)
 end
 
 function LS.GetAirRegulators()
@@ -676,17 +708,16 @@ end
 function Ply:UpdateLSClient()
 	local SB = CAF.GetAddon("Spacebuild");
 	if SB and SB.GetStatus() then
-		umsg.Start("LS_umsg1", self)
-			umsg.Float( self.environment:GetO2Percentage() or -1)
-			umsg.Short( self.suit.air or -1 )
-			umsg.Short( self.environment:GetTemperature(self) or -1)
-			umsg.Short( self.suit.coolant or -1)
-			umsg.Short( self.suit.energy  or -1)
-		umsg.End() 
+		net.Start("LS_umsg1")
+			net.WriteFloat(self.environment:GetO2Percentage() or -1)
+			net.WriteInt(self.suit.air or -1, 16)
+			net.WriteInt(self.environment:GetTemperature(self) or -1, 16)
+			net.WriteInt(self.suit.coolant or -1, 16)
+			net.WriteInt(self.suit.energy or -1, 16)
+		net.Send(self)
 	else
-		umsg.Start("LS_umsg2", self)
-			umsg.Short( self.suit.air or -1 )
-		umsg.End() 
+		net.Start("LS_umsg2")
+			net.WriteInt(self.suit.air or -1, 16)
+		net.Send(self)
 	end
 end
-

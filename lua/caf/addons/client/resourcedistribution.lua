@@ -192,12 +192,12 @@ usermessage.Hook("RD_RemoveEnt", RemoveEnt)]]
 umsg.Start("RD_ClearNets")
 	umsg.End()
 ]]
-local function ClearNets( um )
+local function ClearNets( len, client )
 	--nettable = {}
 	--ent_table = {}
 	rd_cache:clear();
 end
-usermessage.Hook("RD_ClearNets", ClearNets)
+net.Receive("RD_ClearNets", ClearNets)
 
 --[[
 umsg.Start("RD_Entity_Data", ply)
@@ -738,10 +738,10 @@ local function GenUseMenu(ent)
 	SmallFrame:MakePopup()
 end 
 
-local function RecieveInputs(um)
-	local last = um:ReadBool()
-	local input = um:ReadString()
-	local index = um:ReadShort()
+local function RecieveInputs(len, client)
+	local last = net.ReadBit() == 1
+	local input = net.ReadString()
+	local index = net.ReadInt(16)
 	local ent = ents.GetByIndex(index)
 	ent.serverindex = index
 	if not ent.Inputs then ent.Inputs = {} end
@@ -750,4 +750,4 @@ local function RecieveInputs(um)
 		GenUseMenu(ent)
 	end
 end
-usermessage.Hook("RD_AddInputToMenu", RecieveInputs)
+net.Receive("RD_AddInputToMenu", RecieveInputs)

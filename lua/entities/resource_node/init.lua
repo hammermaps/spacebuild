@@ -10,10 +10,10 @@ function ENT:Initialize()
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
 	self.netid = CAF.GetAddon("Resource Distribution").CreateNetwork(self)
-	self:SetNetworkedInt( "netid", self.netid )
-	self:SetNetworkedInt( "overlaymode", 2 )
+	self:SetNWInt( "netid", self.netid )
+	self:SetNWInt( "overlaymode", 2 )
 	self.range = self.range or 512
-	self:SetNetworkedInt( "range", self.range )
+	self:SetNWInt( "range", self.range )
 	-- Will add the ability to the node to store 1000 units of energy
 	--CAF.GetAddon("Resource Distribution").AddNetResource(self.netid, "energy", 1000)
 	-- Will Add the ability to the node to store 1000 units of water, with the startup amount at 500 units
@@ -21,7 +21,7 @@ function ENT:Initialize()
 end
 
 function ENT:SetCustomNodeName(name)
-	self:SetNetworkedString("rd_node_name", name)
+	self:SetNWString("rd_node_name", name)
 end
 
 function ENT:SetActive( value, caller )
@@ -33,7 +33,7 @@ end
 
 function ENT:SetRange(range)
 	self.range = range
-	self:SetNetworkedInt( "range", self.range )
+	self:SetNWInt( "range", self.range )
 end
 
 function ENT:AcceptInput(name,activator,caller)

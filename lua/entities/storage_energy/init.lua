@@ -37,16 +37,18 @@ function ENT:Repair()
 end
 
 function ENT:Destruct()
-    if CAF and CAF.GetAddon("Life Support") then
-        CAF.GetAddon("Life Support").Destruct(self, true)
+    local lsAddon = CAF and CAF.GetAddon("Life Support")
+    if lsAddon then
+        lsAddon.Destruct(self, true)
     end
 end
 
 function ENT:Leak()
     local energy = self:GetResourceAmount("energy")
     local zapme
-    if CAF.GetAddon("Life Support") then
-        zapme = CAF.GetAddon("Life Support").ZapMe
+    local lsAddon = CAF.GetAddon("Life Support")
+    if lsAddon then
+        zapme = lsAddon.ZapMe
     end
     if energy > 0 then
         local waterlevel = 0
@@ -84,6 +86,11 @@ function ENT:Leak()
 end
 
 function ENT:Think()
+    if CurTime() < (self._nextCheck or 0) then
+        self:NextThink(self._nextCheck)
+        return true
+    end
+    self._nextCheck = CurTime() + 1
     self.BaseClass.Think(self)
     if ((self.damaged == 1 or self.vent)) then
         self:Leak()

@@ -5,7 +5,7 @@ end
 
 local net = net
 
-local net_pools = {"CAF_Addon_Construct", "CAF_Addon_Destruct", "CAF_Start_true", "CAF_Start_false", "CAF_Addon_POPUP"};
+local net_pools = {"CAF_Addon_Construct", "CAF_Addon_Destruct", "CAF_Start_true", "CAF_Start_false", "CAF_Addon_POPUP", "CAF_Addon_List"};
 for _, v in pairs(net_pools) do
     print("Pooling ", v, " for net library");
     util.AddNetworkString(v)
@@ -352,7 +352,7 @@ local function AddonConstruct(ply, com, args)
 	if not ply:IsAdmin() then ply:ChatPrint("You are not allowed to Construct a Custom Addon") return end
 	if not args then ply:ChatPrint("You forgot to provide arguments") return end
 	if not args[1] then ply:ChatPrint("You forgot to enter the Addon Name") return end
-	if table.Count(args) > 1 then --Construct the Addon name if it had spaces in it
+	if args[2] ~= nil then --Construct the Addon name if it had spaces in it
 		for k , v in pairs(args) do
 			if k ~= 1 then
 				args[1] = args[1] .. " " .. v
@@ -375,7 +375,7 @@ local function AddonDestruct(ply, com, args)
 	if not ply:IsAdmin() then ply:ChatPrint("You are not allowed to Destruct a Custom Addon") return end
 	if not args then ply:ChatPrint("You forgot to provide arguments") return end
 	if not args[1] then ply:ChatPrint("You forgot to enter the Addon Name") return end
-	if table.Count(args) > 1 then --Construct the Addon name if it had spaces in it
+	if args[2] ~= nil then --Construct the Addon name if it had spaces in it
 		for k , v in pairs(args) do
 			if k ~= 1 then
 				args[1] = args[1] .. " " .. v
@@ -412,26 +412,32 @@ function CAF2.PlayerSpawn(ply)
 	
 	timer.Simple(1, function()
 		if not IsValid(ply) then return end
-		
+		local activeAddons = {}
 		for k, v in pairs(Addons) do
 			if v.GetStatus and v.GetStatus() then
-                net.Start("CAF_Addon_Construct")
-                    net.WriteString(k)
-                net.Send(ply)
+				activeAddons[#activeAddons+1] = k
 			end
 		end
+		net.Start("CAF_Addon_List")
+			net.WriteUInt(#activeAddons, 16)
+			for _, name in ipairs(activeAddons) do net.WriteString(name) end
+		net.Send(ply)
 	end)
 end
 hook.Add( "PlayerInitialSpawn", "CAF_In_Spawn", CAF2.PlayerSpawn )
 
 
-local oldcreate = ents.Create
-
-ents.Create = function(class)
-	local ent = oldcreate(class)
-	timer.Simple( 0.1, function() OnEntitySpawn( ent, "SENT" ) end)
-	return ent;
+local function IsCreatedSent(ent)
+	local class = ent:GetClass()
+	return class and scripted_ents.GetStored(class) ~= nil
 end
+
+hook.Add("OnEntityCreated", "CAF_OnEntityCreated", function(ent)
+	if not IsValid(ent) or not IsCreatedSent(ent) then return end
+	timer.Simple(0.1, function()
+		if IsValid(ent) and IsCreatedSent(ent) then OnEntitySpawn(ent, "SENT") end
+	end)
+end)
 
 --msg, location, color, displaytime
 function CAF2.POPUP(ply, msg, location, color, displaytime)
@@ -481,12 +487,16 @@ CAF = CAF2
 ]]
 --Send Client and Shared files to the client and Include the ServerAddons
 
+local PATH_SERVER = "caf/core/server/"
+local PATH_CLIENT = "caf/core/client/"
+local PATH_SHARED = "caf/core/shared/"
+
 --Core files
 
-local Files = file.Find( "caf/core/server/*.lua" , "LUA")
+local Files = file.Find( PATH_SERVER .. "*.lua" , "LUA")
 for k, File in ipairs(Files) do
 	Msg("Loading: "..File.."...")
-	local ErrorCheck, PCallError = pcall(include, "caf/core/server/"..File)
+	local ErrorCheck, PCallError = pcall(include, PATH_SERVER..File)
 	if(not ErrorCheck) then
 		ErrorOffStuff(PCallError)
 	else
@@ -494,10 +504,10 @@ for k, File in ipairs(Files) do
 	end
 end
 
-Files = file.Find("CAF/Core/client/*.lua", "LUA")
+Files = file.Find(PATH_CLIENT .. "*.lua", "LUA")
 for k, File in ipairs(Files) do
 	Msg("Sending: "..File.."...")
-	local ErrorCheck, PCallError = pcall(AddCSLuaFile, "caf/core/client/"..File)
+	local ErrorCheck, PCallError = pcall(AddCSLuaFile, PATH_CLIENT..File)
 	if(not ErrorCheck) then
 		ErrorOffStuff(PCallError)
 	else
@@ -505,10 +515,10 @@ for k, File in ipairs(Files) do
 	end
 end
 
-Files = file.Find("CAF/Core/shared/*.lua", "LUA")
+Files = file.Find(PATH_SHARED .. "*.lua", "LUA")
 for k, File in ipairs(Files) do
 	Msg("Sending: "..File.."...")
-	local ErrorCheck, PCallError = pcall(AddCSLuaFile, "caf/core/shared/"..File)
+	local ErrorCheck, PCallError = pcall(AddCSLuaFile, PATH_SHARED..File)
 	if(not ErrorCheck) then
 		ErrorOffStuff(PCallError)
 	else
@@ -570,3 +580,21 @@ for k, File in ipairs(Files) do
 		Msg("Sent: Successfully\n")
 	end
 end
+
+hook.Add("EntityRemoved", "CAF_RD_EntityRemoved", function(ent)
+	local RD = CAF.GetAddon("Resource Distribution")
+	local hasRDData = ent and (ent.IsNode or ent.IsPump or ent.GetResourceAmount or ent.GetNetworkCapacity or (ent.caf and ent.caf.custom and ent.caf.custom.rdentitydata))
+	if RD and RD.GetStatus() and hasRDData then
+		RD.Unlink(ent)
+		RD.RemoveRDEntity(ent)
+	end
+	local LS = CAF.GetAddon("Life Support")
+	if LS and LS.GetStatus() and ent and ent.GetLSClass then
+		local lsClass = ent:GetLSClass()
+		if lsClass == "air exchanger" then
+			LS.RemoveAirRegulator(ent)
+		elseif lsClass == "temperature exchanger" then
+			LS.RemoveTemperatureRegulator(ent)
+		end
+	end
+end)

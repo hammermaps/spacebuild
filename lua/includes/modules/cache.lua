@@ -97,11 +97,21 @@ function create(ttl, remove)
     local tmp = {}
     setmetatable(tmp, list)
     tmp:create(ttl, remove)
-    timer.Create("caf_cache_timer_" .. tostring(id), ttl, 0, function()
+    local timerName = "caf_cache_timer_" .. tostring(id)
+    tmp._timerName = timerName
+    timer.Create(timerName, ttl, 0, function()
         removeOldData(tmp)
     end)
     id = id + 1;
     return tmp
+end
+
+function list:destroy()
+    if self._timerName then
+        timer.Remove(self._timerName)
+        self._timerName = nil
+    end
+    self.contents = nil
 end
 
 function list:clear()

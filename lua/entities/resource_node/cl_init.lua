@@ -22,7 +22,7 @@ function ENT:DrawTranslucent( bDontDrawModel )
 end
 
 function ENT:DoNormalDraw( bDontDrawModel )
-	local mode = self:GetNetworkedInt("overlaymode")
+	local mode = self:GetNWInt("overlaymode")
 	if RD_OverLay_Mode and mode ~= 0 then -- Don't enable it if disabled by default!
 		if RD_OverLay_Mode.GetInt then
 			local nr = math.Round(RD_OverLay_Mode:GetInt())
@@ -43,12 +43,12 @@ function ENT:DoNormalDraw( bDontDrawModel )
 	if ( EyePos():Distance( self:GetPos() ) < rd_overlay_dist and mode ~= 0 ) and ( (mode ~= 1 and not string.find(self:GetModel(),"s_small_res") ) or LocalPlayer():GetEyeTrace().Entity == self) then
 		local trace = LocalPlayer():GetEyeTrace()
 		if ( !bDontDrawModel ) then self:DrawModel() end
-		local netid = self:GetNetworkedInt("netid")
+		local netid = self:GetNWInt("netid")
 		local nettable = CAF.GetAddon("Resource Distribution").GetNetTable(netid)
 		
-		local range = self:GetNetworkedInt("range")
+		local range = self:GetNWInt("range")
 		local playername = self:GetPlayerName()
-		local nodename = self:GetNetworkedString("rd_node_name")
+		local nodename = self:GetNWString("rd_node_name")
 		if playername == "" then
 			playername = "World"
 		end

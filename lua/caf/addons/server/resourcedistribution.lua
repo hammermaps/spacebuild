@@ -20,188 +20,6 @@ local nextnetid = 1;
 
 --These functions send all needed info the client
 
---nettable
---[[local function CreateEmptyNetwork(netid, ply)
-	umsg.Start("RD_AddNet", ply)
-		umsg.Short(netid)
-	umsg.End()
-end
-
-local function SendResoureDataToNetwork(netid, resource, maxvalue, value, ply)
-	umsg.Start("RD_AddResoureToNet", ply)
-		umsg.Short(netid)
-		umsg.String(resource)
-		umsg.Long(maxvalue)
-		umsg.Long(value)
-	umsg.End()
-end
-
---Needed?
-local function AddConToNetwork(netid, conid, ply)
-	umsg.Start("RD_AddConToNet", ply)
-		umsg.Short(netid)
-		umsg.Short(conid)
-	umsg.End()
-end
-
---Needed?
-local function ClearCons(netid, ply)
-	umsg.Start("RD_RemoveNetCons", ply)
-		umsg.Short(netid)
-	umsg.End()
-end
-
-local function RemoveNetWork(netid, ply)
-	umsg.Start("RD_RemoveNet", ply)
-		umsg.Short(netid)
-	umsg.End()
-end
-
-	--ent_table
-
-local function CreateEmptyEntity(entid, ply)
-	umsg.Start("RD_AddEnt", ply)
-		umsg.Short(entid)
-	umsg.End()
-end
-
-local function SendResoureDataToEntity(entid, resource, maxvalue, value, ply)
-	umsg.Start("RD_AddResoureToEnt", ply)
-		umsg.Short(entid)
-		umsg.String(resource)
-		umsg.Long(maxvalue)
-		umsg.Long(value)
-	umsg.End()
-end
-
-local function ChangeNetWorkOnEntity(entid, netid, ply)
-	umsg.Start("RD_ChangeNetOnEnt", ply)
-		umsg.Short(entid)
-		umsg.Short(netid)
-	umsg.End()
-end
-
-local function RemoveEnt(entid, ply)
-	umsg.Start("RD_RemoveEnt", ply)
-		umsg.Short(entid)
-	umsg.End()
-end]]
-
--- End: These functions send all needed info the client
-
---[[local function UpdateNetworksAndEntities()
-	--Sentd ent_table first
-	if table.Count(ent_table) ~= 0 then
-		for k, v in pairs(ent_table) do
-			if v.clear then
-				RemoveEnt(k)
-				ent_table[k] = nil
-			elseif v.new then
-				CreateEmptyEntity(k)
-				if v.network ~= 0 then
-					ChangeNetWorkOnEntity(k, v.network)
-				end
-				if table.Count(v.resources) > 0 then
-					for l, w in pairs(v.resources) do
-						SendResoureDataToEntity(k, l, w.maxvalue, w.value)
-					end
-				end
-				v.new = false
-				v.haschanged = false
-			elseif v.haschanged then
-				ChangeNetWorkOnEntity(k, v.network)
-				if table.Count(v.resources) > 0 then
-					for l, w in pairs(v.resources) do
-						if w.haschanged then
-							SendResoureDataToEntity(k, l, w.maxvalue, w.value)
-							w.haschanged = false
-						end
-					end
-				end
-				v.haschanged = false
-			end
-		end
-	end
-	--now lets send the nettable
-	if table.Count(nettable) ~= 0 then
-		for k, v in pairs(nettable) do
-			if v.clear then
-				RemoveNetWork(k)
-				nettable[k] = nil
-			elseif v.new then
-				CreateEmptyNetwork(k)
-				if table.Count(v.resources) > 0 then
-					for l, w in pairs(v.resources) do
-						SendResoureDataToNetwork(k, l, w.maxvalue, w.value)
-						w.haschanged = false
-					end
-				end
-				if table.Count(v.cons) > 0 then
-					for l, w in pairs(v.cons) do
-						AddConToNetwork(k, w)
-					end
-				end
-				v.new = false
-				v.haschanged = false
-			elseif v.haschanged then
-				if table.Count(v.resources) > 0 then
-					for l, w in pairs(v.resources) do
-						if w.haschanged then
-							SendResoureDataToNetwork(k, l, w.maxvalue, w.value)
-							w.haschanged = false
-						end
-					end
-				end
-				ClearCons(k)
-				if table.Count(v.cons) > 0 then
-					for l, w in pairs(v.cons) do
-						AddConToNetwork(k, w)
-					end
-				end
-				v.haschanged = false
-			end
-		end
-	end
-end
-
-local function SendEntireNetWorkToClient(ply)
-	--Sentd ent_table first
-	if table.Count(ent_table) ~= 0 then
-		for k, v in pairs(ent_table) do
-			if not v.clear then
-				CreateEmptyEntity(k, ply)
-				if v.network ~= 0 then
-					ChangeNetWorkOnEntity(k, v.network, ply)
-				end
-				if table.Count(v.resources) > 0 then
-					for l, w in pairs(v.resources) do
-						SendResoureDataToEntity(k, l, w.maxvalue, w.value, ply)
-					end
-				end
-			end
-		end
-	end
-	--now lets send the nettable
-	if table.Count(nettable) ~= 0 then
-		for k, v in pairs(nettable) do
-			if not v.clear then
-				CreateEmptyNetwork(k, ply)
-				if table.Count(v.resources) > 0 then
-					for l, w in pairs(v.resources) do
-						SendResoureDataToNetwork(k, l, w.maxvalue, w.value, ply)
-					end
-				end
-				if table.Count(v.cons) > 0 then
-					for l, w in pairs(v.cons) do
-						AddConToNetwork(k, w, ply)
-					end
-				end
-			end
-		end
-	end
-end]]
-
-
 local function WriteBool(bool)
    net.WriteBit(bool)
 end
@@ -215,6 +33,7 @@ local function WriteLong(long)
 end
 
 util.AddNetworkString("RD_Entity_Data")
+util.AddNetworkString("RD_ClearNets")
 local function sendEntityData(ply, entid, rddata)
     net.Start("RD_Entity_Data")
     WriteShort(entid) --send key to update
@@ -300,7 +119,8 @@ local function RequestResourceData(ply, com, args)
 			data.network = tmpdata.network
 			data.resources = {}
 
-			local OverlaySettings = list.Get("LSEntOverlayText")[tmpdata.ent:GetClass()]
+			local lsOverlayList = list.Get("LSEntOverlayText")
+			local OverlaySettings = lsOverlayList and lsOverlayList[tmpdata.ent:GetClass()] or nil
 			local storage = true
 			if OverlaySettings then
 				local num = OverlaySettings.num or 0
@@ -310,12 +130,12 @@ local function RequestResourceData(ply, com, args)
 				if num != -1 then
 					storage = false
 					local v
-					if resnames and table.Count(resnames) > 0 then
+					if resnames and next(resnames) ~= nil then
 						for _, k in pairs(resnames) do
 							data.resources[k] = {value = RD.GetResourceAmount(tmpdata.ent, k), maxvalue = RD.GetNetworkCapacity(tmpdata.ent, k)}
 						end
 					end
-					if genresnames and table.Count(genresnames) > 0 then
+					if genresnames and next(genresnames) ~= nil then
 						for _, k in pairs(genresnames) do
 							data.resources[k] = {value = RD.GetResourceAmount(tmpdata.ent, k), maxvalue = RD.GetNetworkCapacity(tmpdata.ent, k)}
 						end
@@ -362,7 +182,7 @@ concommand.Add( "RD_REQUEST_RESOURCE_DATA", RequestResourceData )
 
 --Remove All Entities that are registered by RD, without RD they won't work anyways!
 local function ClearEntities()
-	if table.Count(ent_table) ~= 0 then
+	if next(ent_table) ~= nil then
 		for k, v in pairs(ent_table) do
 			local ent = ents.GetByIndex( k );
 			if ent and IsValid(ent) and ent ~= NULL then
@@ -373,8 +193,8 @@ local function ClearEntities()
 end
 
 local function ClearNets()
-	umsg.Start("RD_ClearNets")
-	umsg.End()
+	net.Start("RD_ClearNets")
+	net.Broadcast()
 end
 
 local function RD_Initial_Spawn( ply )
@@ -458,6 +278,15 @@ end
 function RD.AddResourcesToSend()
 
 end
+
+function RD.ResetAll()
+	nextnetid = 1
+	ClearNets()
+	ClearEntities()
+	nettable = {}
+	ent_table = {}
+end
+
 CAF.RegisterAddon("Resource Distribution", RD, "1")
 
 --[[
@@ -636,7 +465,7 @@ function RD.ConsumeNetResource(netid, resource, amount)
 		end
 	end
 	if consumed ~= origamount then
-		if table.Count(nettable[index.network].cons) > 0 then
+		if next(nettable[index.network].cons) ~= nil then
 			for k, v in pairs(RD.getConnectedNets(index.network)) do
 				amount = origamount - consumed
 				if v ~= index.network then
@@ -738,7 +567,7 @@ function RD.SupplyNetResource(netid, resource, amount)
 		left = amount
 	end
 	if left > 0 then
-		if table.Count(nettable[index.network].cons) > 0 then
+		if next(nettable[index.network].cons) ~= nil then
 			for k, v in pairs(RD.getConnectedNets(index.network)) do
 				amount = left
 				if v ~= index.network then
@@ -925,16 +754,18 @@ end
 ]]
 function RD.UnlinkNodes(netid, netid2)
 	if nettable[netid] and nettable[netid2] then
+		local toremove1 = {}
 		for k, v in pairs(nettable[netid].cons) do
-			if v == netid2 then
-				table.remove(nettable[netid].cons, k)
-			end
+			if v == netid2 then toremove1[#toremove1+1] = k end
 		end
+		table.sort(toremove1, function(a, b) return a > b end)
+		for _, k in ipairs(toremove1) do table.remove(nettable[netid].cons, k) end
+		local toremove2 = {}
 		for k, v in pairs(nettable[netid2].cons) do
-			if v == netid then
-				table.remove(nettable[netid2].cons, k)
-			end
+			if v == netid then toremove2[#toremove2+1] = k end
 		end
+		table.sort(toremove2, function(a, b) return a > b end)
+		for _, k in ipairs(toremove2) do table.remove(nettable[netid2].cons, k) end
 		nettable[netid].haschanged = true
 		nettable[netid2].haschanged = true
 		return true
@@ -1095,16 +926,16 @@ function RD.BuildDupeInfo( ent )
 	local info = {}
 	--info.resources = table.Copy(nettable.resources)
 	local entids = {}
-	if table.Count(nettable.entities) > 0 then
+	if next(nettable.entities) ~= nil then
 		for k, v in pairs(nettable.entities) do
 			table.insert(entids, v:EntIndex())
 		end
 	end
 	local cons = {}
-	if table.Count(nettable.cons) > 0 then
+	if next(nettable.cons) ~= nil then
 		for k, v in pairs(nettable.cons) do
 			local nettab = RD.GetNetTable(v)
-			if nettab and table.Count(nettab) > 0 and nettab.nodeent and IsValid(nettab.nodeent) then
+			if nettab and next(nettab) ~= nil and nettab.nodeent and IsValid(nettab.nodeent) then
 				table.insert(cons, nettab.nodeent:EntIndex())
 			end
 		end
@@ -1121,7 +952,7 @@ end
 function RD.ApplyDupeInfo( ent, CreatedEntities )
 	if (ent.EntityMods) and (ent.EntityMods.RDDupeInfo) and (ent.EntityMods.RDDupeInfo.entities) then
 		local RDDupeInfo = ent.EntityMods.RDDupeInfo
-		if RDDupeInfo.entities and table.Count(RDDupeInfo.entities) > 0 then
+		if RDDupeInfo.entities and next(RDDupeInfo.entities) ~= nil then
 			for _,ent2ID in pairs(RDDupeInfo.entities) do
 				local ent2 = CreatedEntities[ ent2ID ]
 				if ent2 and ent2:IsValid() then
@@ -1129,7 +960,7 @@ function RD.ApplyDupeInfo( ent, CreatedEntities )
 				end
 			end
 		end
-		if RDDupeInfo.cons and table.Count(RDDupeInfo.cons) > 0 then
+		if RDDupeInfo.cons and next(RDDupeInfo.cons) ~= nil then
 			for _,ent2ID in pairs(RDDupeInfo.cons) do
 				local ent2 = CreatedEntities[ ent2ID ]
 				if ent2 and ent2:IsValid() then
@@ -1200,12 +1031,12 @@ end
 function RD.getConnectedNets(netid)
 	local contable = {}
 	local tmpcons = { netid}
-	while(table.Count(tmpcons) > 0) do
+	while(next(tmpcons) ~= nil) do
 		for k, v in pairs(tmpcons) do
 			if not table.HasValue(contable, v) then
 				table.insert(contable, v)
 				if nettable[v] and nettable[v].cons then
-					if table.Count(nettable[v].cons) > 0 then
+					if next(nettable[v].cons) ~= nil then
 						for l, w in pairs(nettable[v].cons) do
 							table.insert(tmpcons, w)
 						end
@@ -1226,7 +1057,7 @@ function RD.GetNetResourceAmount(netid, resource, sumconnectednets)
 	local index = {}
 	sumconnectednets = sumconnectednets or (sumconnectednets == nil)
 	index.network = netid
-	if sumconnectednets and table.Count(nettable[index.network].cons) > 0 then
+	if sumconnectednets and next(nettable[index.network].cons) ~= nil then
 		for k, v in pairs(RD.getConnectedNets(index.network)) do
 			if nettable[v] and nettable[v].resources and nettable[v].resources[resource]  then
 				amount = amount + nettable[v].resources[resource].value
@@ -1278,7 +1109,7 @@ function RD.GetNetNetworkCapacity(netid, resource, sumconnectednets)
 	local index = {}
 	sumconnectednets = sumconnectednets or (sumconnectednets == nil)
 	index.network = netid
-	if sumconnectednets and table.Count(nettable[index.network].cons) > 0 then
+	if sumconnectednets and next(nettable[index.network].cons) ~= nil then
 		for k, v in pairs(RD.getConnectedNets(index.network)) do
 			if nettable[v] and nettable[v].resources and nettable[v].resources[resource]  then
 				amount = amount + nettable[v].resources[resource].maxvalue
@@ -1347,7 +1178,7 @@ function RD.GetRegisteredResources()
 end
 function RD.GetNetworkIDs()
 	local ids = {}
-	if table.Count(nettable) > 0 then
+	if next(nettable) ~= nil then
 		for k, v in pairs(nettable) do
 			if not v.clear then
 				table.insert(ids, k)
