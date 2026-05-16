@@ -427,10 +427,15 @@ end
 hook.Add( "PlayerInitialSpawn", "CAF_In_Spawn", CAF2.PlayerSpawn )
 
 
+local function IsCreatedSent(ent)
+	local class = ent:GetClass()
+	return class and scripted_ents.GetStored(class) ~= nil
+end
+
 hook.Add("OnEntityCreated", "CAF_OnEntityCreated", function(ent)
-	if not IsValid(ent) then return end
-	timer.Simple(0, function()
-		if IsValid(ent) then OnEntitySpawn(ent, "SENT") end
+	if not IsValid(ent) or not IsCreatedSent(ent) then return end
+	timer.Simple(0.1, function()
+		if IsValid(ent) and IsCreatedSent(ent) then OnEntitySpawn(ent, "SENT") end
 	end)
 end)
 
@@ -578,13 +583,18 @@ end
 
 hook.Add("EntityRemoved", "CAF_RD_EntityRemoved", function(ent)
 	local RD = CAF.GetAddon("Resource Distribution")
-	if RD and RD.GetStatus() then
+	local hasRDData = ent and (ent.IsNode or ent.IsPump or ent.GetResourceAmount or ent.GetNetworkCapacity or (ent.caf and ent.caf.custom and ent.caf.custom.rdentitydata))
+	if RD and RD.GetStatus() and hasRDData then
 		RD.Unlink(ent)
 		RD.RemoveRDEntity(ent)
 	end
 	local LS = CAF.GetAddon("Life Support")
-	if LS and LS.GetStatus() then
-		LS.RemoveAirRegulator(ent)
-		LS.RemoveTemperatureRegulator(ent)
+	if LS and LS.GetStatus() and ent and ent.GetLSClass then
+		local lsClass = ent:GetLSClass()
+		if lsClass == "air exchanger" then
+			LS.RemoveAirRegulator(ent)
+		elseif lsClass == "temperature exchanger" then
+			LS.RemoveTemperatureRegulator(ent)
+		end
 	end
 end)

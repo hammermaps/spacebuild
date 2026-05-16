@@ -104,9 +104,9 @@ function ENT:ShowOutput()
     self:SetNWInt(2, self.environment:GetCO2Percentage() or 0)
     self:SetNWInt(3, self.environment:GetNPercentage() or 0)
     self:SetNWInt(4, self.environment:GetHPercentage() or 0)
-    self:SetNWInt(5, self.environment:GetPressure() or 0)
-    self:SetNWInt(6, self.environment:GetTemperature(self) or 0)
-    self:SetNWInt(7, self.environment:GetGravity() or 0)
+    self:SetNWFloat(5, self.environment:GetPressure() or 0)
+    self:SetNWFloat(6, self.environment:GetTemperature(self) or 0)
+    self:SetNWFloat(7, self.environment:GetGravity() or 0)
     self:SetNWString(8, self.environment:GetEnvironmentName() or "")
     self:SetNWInt(9, self.environment:GetEmptyAirPercentage() or 0)
 end
@@ -122,4 +122,3 @@ function ENT:Think()
     self:NextThink(CurTime() + 1)
     return true
 end
-

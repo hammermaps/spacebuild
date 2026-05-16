@@ -192,7 +192,7 @@ net.Receive("RD_Open_Pump_Menu", OpenMenu)
 local function AddResource(len, client)
 	local ent = net.ReadEntity()
 	local res = net.ReadString()
-	local val = net.ReadInt(16)
+	local val = net.ReadInt(32)
 	if not ent or not ent.IsPump then return end
 	ent.ResourcesToSend[res] = val
 end

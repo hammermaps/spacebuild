@@ -758,11 +758,13 @@ function RD.UnlinkNodes(netid, netid2)
 		for k, v in pairs(nettable[netid].cons) do
 			if v == netid2 then toremove1[#toremove1+1] = k end
 		end
+		table.sort(toremove1, function(a, b) return a > b end)
 		for _, k in ipairs(toremove1) do table.remove(nettable[netid].cons, k) end
 		local toremove2 = {}
 		for k, v in pairs(nettable[netid2].cons) do
 			if v == netid then toremove2[#toremove2+1] = k end
 		end
+		table.sort(toremove2, function(a, b) return a > b end)
 		for _, k in ipairs(toremove2) do table.remove(nettable[netid2].cons, k) end
 		nettable[netid].haschanged = true
 		nettable[netid2].haschanged = true

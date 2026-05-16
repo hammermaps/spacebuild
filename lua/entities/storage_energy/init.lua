@@ -86,12 +86,12 @@ function ENT:Leak()
 end
 
 function ENT:Think()
-    self.BaseClass.Think(self)
     if CurTime() < (self._nextCheck or 0) then
-        self:NextThink(CurTime() + 0.1)
+        self:NextThink(self._nextCheck)
         return true
     end
     self._nextCheck = CurTime() + 1
+    self.BaseClass.Think(self)
     if ((self.damaged == 1 or self.vent)) then
         self:Leak()
     end

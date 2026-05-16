@@ -186,14 +186,27 @@ function ENT:Think()
     return true
 end
 
-local function SendBloom(ent)
+local function SendPlanetData(ent)
     net.Start("AddPlanet")
         net.WriteInt(ent:EntIndex(), 16)
         net.WriteString(ent:GetEnvironmentName())
         net.WriteVector(ent:GetPos())
         net.WriteFloat(ent.sbenvironment.size)
-        net.WriteBit(0)
-        if ent.sbenvironment.bloom ~= nil then
+        if ent.sbenvironment.color and next(ent.sbenvironment.color) ~= nil then
+            net.WriteBit(1)
+            net.WriteInt(ent.sbenvironment.color.AddColor_r, 16)
+            net.WriteInt(ent.sbenvironment.color.AddColor_g, 16)
+            net.WriteInt(ent.sbenvironment.color.AddColor_b, 16)
+            net.WriteInt(ent.sbenvironment.color.MulColor_r, 16)
+            net.WriteInt(ent.sbenvironment.color.MulColor_g, 16)
+            net.WriteInt(ent.sbenvironment.color.MulColor_b, 16)
+            net.WriteFloat(ent.sbenvironment.color.Brightness)
+            net.WriteFloat(ent.sbenvironment.color.Contrast)
+            net.WriteFloat(ent.sbenvironment.color.Color)
+        else
+            net.WriteBit(0)
+        end
+        if ent.sbenvironment.bloom and next(ent.sbenvironment.bloom) ~= nil then
             net.WriteBit(1)
             net.WriteInt(ent.sbenvironment.bloom.Col_r, 16)
             net.WriteInt(ent.sbenvironment.bloom.Col_g, 16)
@@ -210,28 +223,12 @@ local function SendBloom(ent)
     net.Broadcast()
 end
 
+local function SendBloom(ent)
+    SendPlanetData(ent)
+end
+
 local function SendColor(ent)
-    net.Start("AddPlanet")
-        net.WriteInt(ent:EntIndex(), 16)
-        net.WriteString(ent:GetEnvironmentName())
-        net.WriteVector(ent:GetPos())
-        net.WriteFloat(ent.sbenvironment.size)
-        if ent.sbenvironment.color ~= nil then
-            net.WriteBit(1)
-            net.WriteInt(ent.sbenvironment.color.AddColor_r, 16)
-            net.WriteInt(ent.sbenvironment.color.AddColor_g, 16)
-            net.WriteInt(ent.sbenvironment.color.AddColor_b, 16)
-            net.WriteInt(ent.sbenvironment.color.MulColor_r, 16)
-            net.WriteInt(ent.sbenvironment.color.MulColor_g, 16)
-            net.WriteInt(ent.sbenvironment.color.MulColor_b, 16)
-            net.WriteFloat(ent.sbenvironment.color.Brightness)
-            net.WriteFloat(ent.sbenvironment.color.Contrast)
-            net.WriteFloat(ent.sbenvironment.color.Color)
-        else
-            net.WriteBit(0)
-        end
-        net.WriteBit(0)
-    net.Broadcast()
+    SendPlanetData(ent)
 end
 
 function ENT:BloomEffect(Col_r, Col_g, Col_b, SizeX, SizeY, Passes, Darken, Multiply, Color)

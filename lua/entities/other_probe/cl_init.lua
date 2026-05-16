@@ -61,9 +61,9 @@ function ENT:DoNormalDraw(bDontDrawModel)
                 OverlayText = OverlayText .. "Nitrogen Level: " .. string.format("%g", self:GetNWInt(3)) .. "%" .. "\n"
                 OverlayText = OverlayText .. "Hydrogen Level: " .. string.format("%g", self:GetNWInt(4)) .. "%" .. "\n"
                 OverlayText = OverlayText .. "Vacuum: " .. string.format("%g", self:GetNWInt(9)) .. "%" .. "\n"
-                OverlayText = OverlayText .. "Pressure: " .. tostring(self:GetNWInt(5)) .. "\n"
-                OverlayText = OverlayText .. "Temperature: " .. tostring(self:GetNWInt(6)) .. "\n"
-                OverlayText = OverlayText .. "Gravity: " .. tostring(self:GetNWInt(7)) .. "\n"
+                OverlayText = OverlayText .. "Pressure: " .. tostring(self:GetNWFloat(5)) .. "\n"
+                OverlayText = OverlayText .. "Temperature: " .. tostring(self:GetNWFloat(6)) .. "\n"
+                OverlayText = OverlayText .. "Gravity: " .. tostring(self:GetNWFloat(7)) .. "\n"
             end
             AddWorldTip(self:EntIndex(), OverlayText, 0.5, self:GetPos(), self)
         else
@@ -165,17 +165,17 @@ function ENT:DoNormalDraw(bDontDrawModel)
             surface.SetFont("Flavour")
             surface.SetTextColor(155, 155, 255, 255)
             surface.SetTextPos(textStartPos + 15, TempY)
-            surface.DrawText("Pressure: " .. tostring(self:GetNWInt(5)))
+            surface.DrawText("Pressure: " .. tostring(self:GetNWFloat(5)))
             TempY = TempY + 70
             surface.SetFont("Flavour")
             surface.SetTextColor(155, 155, 255, 255)
             surface.SetTextPos(textStartPos + 15, TempY)
-            surface.DrawText("Temperature: " .. tostring(self:GetNWInt(6)))
+            surface.DrawText("Temperature: " .. tostring(self:GetNWFloat(6)))
             TempY = TempY + 70
             surface.SetFont("Flavour")
             surface.SetTextColor(155, 155, 255, 255)
             surface.SetTextPos(textStartPos + 15, TempY)
-            surface.DrawText("Gravity: " .. tostring(self:GetNWInt(7)))
+            surface.DrawText("Gravity: " .. tostring(self:GetNWFloat(7)))
             TempY = TempY + 70
             --Stop rendering
             cam.End3D2D()

@@ -14,17 +14,24 @@ CreateConVar( "LS_AllowNukeEffect", "1" ) --Update to something changeable later
 local SB_AIR_O2 = 0
 local SB_AIR_CO2 = 1
 
+local function RemoveEntriesByIndex(list, indices)
+	table.sort(indices, function(a, b) return a > b end)
+	for _, k in ipairs(indices) do
+		table.remove(list, k)
+	end
+end
+
 local function CheckRegulators()
 	local toremove = {}
 	for k, v in pairs(LS.generators.air) do
 		if not v then toremove[#toremove+1] = k end
 	end
-	for _, k in ipairs(toremove) do LS.generators.air[k] = nil end
+	RemoveEntriesByIndex(LS.generators.air, toremove)
 	toremove = {}
 	for k, v in pairs(LS.generators.temperature) do
 		if not v then toremove[#toremove+1] = k end
 	end
-	for _, k in ipairs(toremove) do LS.generators.temperature[k] = nil end
+	RemoveEntriesByIndex(LS.generators.temperature, toremove)
 end
 
 LS.generators = {}
@@ -264,7 +271,7 @@ function LS.RemoveAirRegulator(ent)
 	for k, v in pairs(LS.generators.air) do
 		if v == ent then toremove[#toremove+1] = k end
 	end
-	for _, k in ipairs(toremove) do table.remove(LS.generators.air, k) end
+	RemoveEntriesByIndex(LS.generators.air, toremove)
 end
 
 function LS.RemoveTemperatureRegulator(ent)
@@ -272,7 +279,7 @@ function LS.RemoveTemperatureRegulator(ent)
 	for k, v in pairs(LS.generators.temperature) do
 		if v == ent then toremove[#toremove+1] = k end
 	end
-	for _, k in ipairs(toremove) do table.remove(LS.generators.temperature, k) end
+	RemoveEntriesByIndex(LS.generators.temperature, toremove)
 end
 
 function LS.GetAirRegulators()
@@ -714,4 +721,3 @@ function Ply:UpdateLSClient()
 		net.Send(self)
 	end
 end
-
